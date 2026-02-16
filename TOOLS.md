@@ -25,6 +25,12 @@ Things like:
 
 - home-server → 192.168.1.100, user: admin
 
+### Group Chat Servers
+
+- oc → 47.101.164.106 (用户: root)
+- od → 47.103.59.164 (用户: root)
+- oe → 106.14.142.124 (用户: root)
+
 ### TTS
 
 - Preferred voice: "Nova" (warm, slightly British)
