@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "minimax": {
+      "baseUrl": "https://api.minimaxi.com/"
+    }
+  },
+  "imports": []
+}
