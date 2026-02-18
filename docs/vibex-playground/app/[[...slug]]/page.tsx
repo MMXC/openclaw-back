@@ -1,14 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getAllPages, getAllComponents, getPageBySlug, getComponentBySlug } from '../../lib/config';
-import { renderPage } from '../../lib/renderer';
-import styles from './page.module.css';
-
-interface PageProps {
-  params: {
-    slug: string[];
-  };
-}
+import styles from './home.module.css';
 
 export async function generateStaticParams() {
   const pages = getAllPages();
@@ -20,96 +13,58 @@ export async function generateStaticParams() {
   ];
 }
 
-export async function generateMetadata({ params }: PageProps) {
-  const slugArray = params.slug || [];
-  const slug = slugArray.join('/');
-  
-  const page = getPageBySlug(slug);
-  const component = getComponentBySlug(slug);
-  
-  if (!page && !component) {
-    return { title: 'Not Found' };
-  }
-  
-  const name = page?.name || component?.name || '';
+export async function generateMetadata() {
   return {
-    title: `${name} - VibeX Playground`,
+    title: 'VibeX Playground - UI 原型预览',
+    description: 'VibeX 页面和控件原型预览',
   };
 }
 
-export default async function PagePreview({ params }: PageProps) {
-  const slugArray = params.slug || [];
-  const slug = slugArray.join('/');
-  
-  // 尝试匹配页面
-  const page = getPageBySlug(slug);
-  // 尝试匹配控件
-  const component = getComponentBySlug(slug);
-
-  if (!page && !component) {
-    notFound();
-  }
-
+export default async function Home() {
   const pages = getAllPages();
   const components = getAllComponents();
 
   return (
-    <div className={styles.previewContainer}>
-      {/* 侧边栏 */}
-      <aside className={styles.previewSidebar}>
-        <div className={styles.previewSidebarTitle}>页面</div>
-        {pages.map(p => (
-          <Link 
-            key={p.id} 
-            href={`/${p.slug}`}
-            className={`${styles.previewMenuItem} ${p.slug === slug ? styles.active : ''}`}
-          >
-            {p.name}
-          </Link>
-        ))}
-        
-        <div className={styles.previewSidebarTitle} style={{ marginTop: 24 }}>控件</div>
-        {components.map(c => (
-          <Link 
-            key={c.id} 
-            href={`/component/${c.slug}`}
-            className={`${styles.previewMenuItem} ${c.slug === slug ? styles.active : ''}`}
-          >
-            {c.name}
-          </Link>
-        ))}
-      </aside>
+    <div className={styles.container}>
+      <header className={styles.header}>
+        <h1 className={styles.title}>VibeX Playground</h1>
+        <p className={styles.description}>UI 原型预览与测试</p>
+      </header>
 
-      {/* 主内容 */}
-      <main className={styles.previewMain}>
-        {/* 顶部栏 */}
-        <header className={styles.previewHeader}>
-          <Link href="/" className={styles.previewBack}>
-            ← 返回首页
-          </Link>
-          <div>
-            <span className={styles.previewName}>{page?.name || component?.name}</span>
-            <span className={styles.previewId}>{page?.id || component?.id}</span>
+      <main className={styles.main}>
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>📄 页面 ({pages.length})</h2>
+          <div className={styles.grid}>
+            {pages.map((page) => (
+              <Link 
+                key={page.id} 
+                href={`/${page.slug}`}
+                className={styles.card}
+              >
+                <span className={styles.cardId}>{page.id.replace('page_', '').padStart(2, '0')}</span>
+                <span className={styles.cardName}>{page.name}</span>
+                <span className={styles.cardArrow}>→</span>
+              </Link>
+            ))}
           </div>
-          <div className={styles.previewActions}>
-            <span className={styles.previewTip}>按 F12 截图</span>
-          </div>
-        </header>
+        </section>
 
-        {/* 页面内容 - 基于骨架渲染 */}
-        <div className={styles.previewContent}>
-          {page?.skeleton ? (
-            renderPage(page.skeleton)
-          ) : component ? (
-            <div style={{ padding: 48 }}>
-              <h2 style={{ marginBottom: 24 }}>{component.name}</h2>
-              <div style={{ fontSize: 12, color: '#999', marginBottom: 16 }}>Props 定义</div>
-              <pre style={{ background: '#1a1a2e', color: '#a9b7c6', padding: 16, borderRadius: 8, overflow: 'auto' }}>
-                {JSON.stringify(component.propsDefinition, null, 2)}
-              </pre>
-            </div>
-          ) : null}
-        </div>
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>🧩 控件 ({components.length})</h2>
+          <div className={styles.grid}>
+            {components.map((comp) => (
+              <Link 
+                key={comp.id} 
+                href={`/component/${comp.slug}`}
+                className={styles.card}
+              >
+                <span className={styles.cardId}>{comp.id.replace('comp_', '').padStart(2, '0')}</span>
+                <span className={styles.cardName}>{comp.name}</span>
+                <span className={styles.cardArrow}>→</span>
+              </Link>
+            ))}
+          </div>
+        </section>
       </main>
     </div>
   );
