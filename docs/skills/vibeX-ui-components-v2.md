@@ -459,7 +459,110 @@
 
 ---
 
-## 五、使用方式
+## 五、交互组件数据格式
+
+### 1. 请求格式
+
+```json
+{
+  "component": "组件名称",
+  "action": "操作类型",
+  "params": {
+    "字段1": "值",
+    "字段2": "值"
+  },
+  "options": {
+    "loading": true,
+    "timeout": 30000
+  }
+}
+```
+
+### 2. 响应格式
+
+```json
+{
+  "success": true,
+  "data": { },
+  "message": "操作成功",
+  "code": 200
+}
+```
+
+### 3. 常见交互组件数据格式
+
+#### Button (提交表单)
+```
+请求: POST /api/xxx
+{
+  "phone": "13800138000",
+  "code": "123456",
+  "password": "xxx"
+}
+响应: { "success": true, "data": { "token": "xxx" }, "code": 200 }
+```
+
+#### Input (搜索)
+```
+请求: GET /api/search?q=关键词
+响应: { "success": true, "data": { "list": [], "total": 0 }, "code": 200 }
+```
+
+#### Select (获取选项)
+```
+请求: GET /api/options?type=xxx
+响应: { "success": true, "data": [{ "value": "1", "label": "选项1" }], "code": 200 }
+```
+
+#### Form (登录)
+```
+请求: POST /api/login
+{
+  "username": "13800138000",
+  "password": "password"
+}
+响应: { "success": true, "data": { "token": "xxx", "user": { "id": 1, "name": "用户" } }, "code": 200 }
+```
+
+#### Upload (文件上传)
+```
+请求: POST /api/upload (multipart/form-data)
+{
+  "file": "二进制文件"
+}
+响应: { "success": true, "data": { "url": "https://xxx.jpg" }, "code": 200 }
+```
+
+#### Table (分页列表)
+```
+请求: GET /api/list?page=1&size=10&keyword=xxx
+响应: {
+  "success": true,
+  "data": {
+    "list": [{ "id": 1, "name": "项目A" }],
+    "pagination": { "page": 1, "size": 10, "total": 100 }
+  },
+  "code": 200
+}
+```
+
+#### Modal (确认对话框)
+```
+请求: POST /api/confirm
+{ "action": "delete", "id": 1 }
+响应: { "success": true, "message": "操作成功", "code": 200 }
+```
+
+#### Drawer (编辑)
+```
+请求: PUT /api/item/1
+{ "name": "新名称", "description": "描述" }
+响应: { "success": true, "data": { "id": 1, "name": "新名称" }, "code": 200 }
+```
+
+---
+
+## 六、使用方式
 
 1. 用户确认领域和流程节点
 2. 调用 vibeX-flow-nodes 生成流程

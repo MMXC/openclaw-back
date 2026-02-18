@@ -298,3 +298,135 @@
 | 阴影 | 0 2px 8px rgba(0,0,0,0.15) |
 | 选中态 | 蓝色边框 + 光晕 |
 | 类型颜色 | 开始:#52c41a, 任务:#1890ff, 网关:#faad14, 结束:#ff4d4f |
+
+---
+
+## 4. 数据交互格式
+
+### 用户登录 (LoginForm)
+
+```
+请求: POST /api/auth/login
+{
+  "phone": "13800138000",
+  "password": "encrypted_password"
+}
+响应: {
+  "success": true,
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIs...",
+    "user": { "id": 1, "name": "张三", "avatar": "https://..." }
+  },
+  "code": 200
+}
+```
+
+### 获取项目列表 (ProjectList)
+
+```
+请求: GET /api/projects?page=1&size=10
+响应: {
+  "success": true,
+  "data": {
+    "list": [
+      { "id": 1, "name": "直播系统", "status": "draft", "updatedAt": "2026-02-18" }
+    ],
+    "pagination": { "page": 1, "size": 10, "total": 15 }
+  },
+  "code": 200
+}
+```
+
+### 创建新项目 (CreateProject)
+
+```
+请求: POST /api/projects
+{
+  "name": "直播系统",
+  "description": "我想做一个直播系统"
+}
+响应: {
+  "success": true,
+  "data": { "id": 16, "name": "直播系统", "status": "draft" },
+  "code": 201
+}
+```
+
+### 获取流程节点 (GetFlowNodes)
+
+```
+请求: GET /api/projects/1/flow
+响应: {
+  "success": true,
+  "data": {
+    "nodes": [
+      { "id": "node_1", "type": "start", "name": "开始", "x": 100, "y": 200 }
+    ],
+    "edges": [
+      { "id": "edge_1", "source": "node_1", "target": "node_2" }
+    ]
+  },
+  "code": 200
+}
+```
+
+### 保存流程图 (SaveFlow)
+
+```
+请求: PUT /api/projects/1/flow
+{
+  "nodes": [
+    { "id": "node_1", "type": "start", "name": "开始", "x": 100, "y": 200 }
+  ],
+  "edges": [
+    { "id": "edge_1", "source": "node_1", "target": "node_2" }
+  ]
+}
+响应: {
+  "success": true,
+  "message": "保存成功",
+  "code": 200
+}
+```
+
+### AI 对话发送 (SendMessage)
+
+```
+请求: POST /api/chat/send
+{
+  "projectId": 1,
+  "message": "我想做一个直播系统",
+  "context": []
+}
+响应: {
+  "success": true,
+  "data": {
+    "reply": "好的，我来为你创建直播系统...",
+    "type": "text",
+    "actions": [
+      { "type": "generate_flow", "data": { "domains": [...] } }
+    ]
+  },
+  "code": 200
+}
+```
+
+### 页面骨架生成 (GeneratePrototype)
+
+```
+请求: POST /api/prototype/generate
+{
+  "projectId": 1,
+  "pageId": "home",
+  "components": ["Header", "Hero", "Features"]
+}
+响应: {
+  "success": true,
+  "data": {
+    "html": "<div>...</div>",
+    "css": ".header { ... }",
+    "preview": "data:image/png;base64,..."
+  },
+  "code": 200
+}
+```
