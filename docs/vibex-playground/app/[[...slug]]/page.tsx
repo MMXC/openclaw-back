@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getAllPages, getAllComponents, getConfigBySlug, PageConfig } from '../../lib/config';
-import { loadPageComponent } from '../../lib/registry';
+import { getAllPages, getAllComponents, getPageBySlug, getComponentBySlug } from '../../lib/config';
+import { renderPage } from '../../lib/renderer';
 import styles from './page.module.css';
 
 interface PageProps {
@@ -21,15 +21,19 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: PageProps) {
-  const slug = params.slug?.join('/') || '';
-  const config = getConfigBySlug(slug);
+  const slugArray = params.slug || [];
+  const slug = slugArray.join('/');
   
-  if (!config) {
+  const page = getPageBySlug(slug);
+  const component = getComponentBySlug(slug);
+  
+  if (!page && !component) {
     return { title: 'Not Found' };
   }
   
+  const name = page?.name || component?.name || '';
   return {
-    title: `${config.name} - VibeX Playground`,
+    title: `${name} - VibeX Playground`,
   };
 }
 
@@ -37,14 +41,14 @@ export default async function PagePreview({ params }: PageProps) {
   const slugArray = params.slug || [];
   const slug = slugArray.join('/');
   
-  const config = getConfigBySlug(slug);
-  
-  if (!config) {
+  // 尝试匹配页面
+  const page = getPageBySlug(slug);
+  // 尝试匹配控件
+  const component = getComponentBySlug(slug);
+
+  if (!page && !component) {
     notFound();
   }
-
-  // 加载组件
-  const { component: Component, data, mock } = await loadPageComponent(slug);
 
   const pages = getAllPages();
   const components = getAllComponents();
@@ -84,40 +88,28 @@ export default async function PagePreview({ params }: PageProps) {
             ← 返回首页
           </Link>
           <div>
-            <span className={styles.previewName}>{config.name}</span>
-            <span className={styles.previewId}>{config.id}</span>
+            <span className={styles.previewName}>{page?.name || component?.name}</span>
+            <span className={styles.previewId}>{page?.id || component?.id}</span>
           </div>
           <div className={styles.previewActions}>
             <span className={styles.previewTip}>按 F12 截图</span>
           </div>
         </header>
 
-        {/* 组件内容 */}
+        {/* 页面内容 - 基于骨架渲染 */}
         <div className={styles.previewContent}>
-          {Component ? (
-            <Component />
-          ) : (
-            <div className={styles.previewError}>
-              <p>组件加载失败</p>
-              <p>请检查路径: {config.path}</p>
+          {page?.skeleton ? (
+            renderPage(page.skeleton)
+          ) : component ? (
+            <div style={{ padding: 48 }}>
+              <h2 style={{ marginBottom: 24 }}>{component.name}</h2>
+              <div style={{ fontSize: 12, color: '#999', marginBottom: 16 }}>Props 定义</div>
+              <pre style={{ background: '#1a1a2e', color: '#a9b7c6', padding: 16, borderRadius: 8, overflow: 'auto' }}>
+                {JSON.stringify(component.propsDefinition, null, 2)}
+              </pre>
             </div>
-          )}
+          ) : null}
         </div>
-
-        {/* 数据面板（可选显示） */}
-        {data && (
-          <details className={styles.dataPanel}>
-            <summary>📊 查看数据</summary>
-            <pre>{JSON.stringify(data, null, 2)}</pre>
-          </details>
-        )}
-
-        {mock && (
-          <details className={styles.dataPanel}>
-            <summary>🎭 查看 Mock 数据</summary>
-            <pre>{JSON.stringify(mock, null, 2)}</pre>
-          </details>
-        )}
       </main>
     </div>
   );
