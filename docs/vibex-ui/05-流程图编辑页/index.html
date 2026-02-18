@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>流程图编辑 - VibeX</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --primary: #1890ff;
+      --primary-light: #e6f7ff;
+      --success: #52c41a;
+      --warning: #faad14;
+      --error: #ff4d4f;
+      --bg-light: #f5f5f5;
+      --bg-white: #fff;
+      --border: #e8e8e8;
+      --text-primary: #333;
+      --text-secondary: #666;
+    }
+    body { font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    
+    /* Header */
+    .header { height: 56px; background: var(--bg-white); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 16px; gap: 16px; }
+    .back-btn { background: none; border: none; cursor: pointer; font-size: 18px; }
+    .project-name { font-size: 16px; font-weight: 500; border: none; background: transparent; }
+    .header-center { flex: 1; display: flex; justify-content: center; gap: 8px; }
+    .header-actions { display: flex; gap: 8px; }
+    .btn { padding: 6px 16px; border-radius: 6px; font-size: 14px; cursor: pointer; border: 1px solid var(--border); background: var(--bg-white); }
+    .btn-primary { background: var(--primary); color: white; border: none; }
+    .btn-icon { padding: 6px 10px; }
+
+    /* Main Layout */
+    .layout { flex: 1; display: flex; overflow: hidden; }
+    
+    /* Left: Node Library */
+    .node-library { width: 200px; background: var(--bg-white); border-right: 1px solid var(--border); padding: 16px; overflow-y: auto; }
+    .library-title { font-size: 12px; color: #999; text-transform: uppercase; margin-bottom: 12px; }
+    .node-item { padding: 10px 12px; background: var(--bg-light); border-radius: 6px; margin-bottom: 8px; cursor: grab; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+    .node-item:active { cursor: grabbing; }
+    .node-icon { width: 24px; height: 24px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+    .node-start { background: #d9f7be; }
+    .node-end { background: #ffccc7; }
+    .node-page { background: #bae7ff; }
+    .node-decision { background: #ffe58f; }
+    .node-task { background: #f0f0f0; }
+
+    /* Canvas */
+    .canvas { flex: 1; background: var(--bg-light); position: relative; overflow: hidden; }
+    .canvas-grid { position: absolute; inset: 0; background-image: radial-gradient(circle, #ddd 1px, transparent 1px); background-size: 20px 20px; }
+    
+    /* Flow Nodes */
+    .flow-node { position: absolute; padding: 12px 20px; border-radius: 8px; cursor: move; min-width: 120px; text-align: center; font-size: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .flow-node.selected { box-shadow: 0 0 0 2px var(--primary); }
+    .flow-start { background: #d9f7be; border-radius: 20px; }
+    .flow-page { background: #bae7ff; }
+    .flow-decision { background: #ffe58f; transform: rotate(0deg); }
+    .flow-end { background: #ffccc7; border-radius: 20px; }
+
+    /* Connection Lines (SVG) */
+    .connections { position: absolute; inset: 0; pointer-events: none; }
+    .connection-line { stroke: #999; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+
+    /* Right: Properties */
+    .properties { width: 280px; background: var(--bg-white); border-left: 1px solid var(--border); padding: 16px; overflow-y: auto; }
+    .prop-section { margin-bottom: 20px; }
+    .prop-title { font-size: 12px; color: #999; text-transform: uppercase; margin-bottom: 12px; }
+    .prop-row { margin-bottom: 12px; }
+    .prop-label { font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; display: block; }
+    .prop-input { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; }
+    .prop-textarea { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; resize: vertical; min-height: 80px; }
+
+    /* Zoom Controls */
+    .zoom-controls { position: absolute; bottom: 20px; right: 20px; display: flex; gap: 8px; }
+    .zoom-btn { width: 36px; height: 36px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-white); cursor: pointer; font-size: 18px; }
+    .zoom-level { padding: 8px 12px; background: var(--bg-white); border-radius: 6px; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <button class="back-btn">←</button>
+    <span class="project-name">直播系统 - 流程图</span>
+    <div class="header-center">
+      <button class="btn btn-icon">↩️</button>
+      <button class="btn btn-icon">↪️</button>
+    </div>
+    <div class="header-actions">
+      <button class="btn">预览</button>
+      <button class="btn">导出</button>
+      <button class="btn btn-primary">保存</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <!-- Node Library -->
+    <aside class="node-library">
+      <div class="library-title">基础节点</div>
+      <div class="node-item"><span class="node-icon node-start">●</span> 开始</div>
+      <div class="node-item"><span class="node-icon node-end">●</span> 结束</div>
+      <div class="node-item"><span class="node-icon node-task">▢</span> 任务</div>
+      
+      <div class="library-title" style="margin-top: 20px;">页面节点</div>
+      <div class="node-item"><span class="node-icon node-page">▢</span> 页面</div>
+      
+      <div class="library-title" style="margin-top: 20px;">逻辑节点</div>
+      <div class="node-item"><span class="node-icon node-decision">◇</span> 判断</div>
+      <div class="node-item"><span class="node-icon node-task">⊞</span> 子流程</div>
+    </aside>
+
+    <!-- Canvas -->
+    <div class="canvas">
+      <div class="canvas-grid"></div>
+      
+      <!-- SVG Connections -->
+      <svg class="connections">
+        <defs>
+          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#999"/>
+          </marker>
+        </defs>
+        <path class="connection-line" d="M 140 70 C 200 70, 200 150, 260 150"/>
+        <path class="connection-line" d="M 260 170 L 260 250"/>
+      </svg>
+      
+      <!-- Flow Nodes -->
+      <div class="flow-node flow-start" style="left: 80px; top: 50px;">开始</div>
+      <div class="flow-node flow-page" style="left: 260px; top: 130px;">用户登录</div>
+      <div class="flow-node flow-decision" style="left: 420px; top: 130px;">是否注册</div>
+      <div class="flow-node flow-page" style="left: 420px; top: 250px;">注册页</div>
+      <div class="flow-node flow-end" style="left: 580px; top: 50px;">结束</div>
+      
+      <!-- Zoom Controls -->
+      <div class="zoom-controls">
+        <button class="zoom-btn">-</button>
+        <span class="zoom-level">100%</span>
+        <button class="zoom-btn">+</button>
+      </div>
+    </div>
+
+    <!-- Properties Panel -->
+    <aside class="properties">
+      <div class="prop-section">
+        <div class="prop-title">节点属性</div>
+        <div class="prop-row">
+          <label class="prop-label">节点名称</label>
+          <input type="text" class="prop-input" value="用户登录">
+        </div>
+        <div class="prop-row">
+          <label class="prop-label">节点类型</label>
+          <input type="text" class="prop-input" value="页面" disabled>
+        </div>
+        <div class="prop-row">
+          <label class="prop-label">描述</label>
+          <textarea class="prop-textarea">用户登录页面，包含账号密码登录和第三方登录</textarea>
+        </div>
+      </div>
+      <div class="prop-section">
+        <div class="prop-title">页面预览</div>
+        <div style="background: linear-gradient(135deg,#667eea,#764ba2); height: 120px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px;">📱</div>
+        <button class="btn" style="width: 100%; margin-top: 8px;">查看页面</button>
+      </div>
+    </aside>
+  </div>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>导出 - VibeX</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { --primary: #1890ff; --bg-light: #f5f5f5; --bg-white: #fff; --border: #e8e8e8; }
+    body { font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background: var(--bg-light); min-height: 100vh; display: flex; flex-direction: column; }
+    
+    .header { height: 56px; background: var(--bg-white); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 24px; }
+    .header h1 { font-size: 18px; }
+
+    .main { flex: 1; padding: 40px; max-width: 800px; margin: 0 auto; width: 100%; }
+    
+    .export-card { background: var(--bg-white); border-radius: 12px; padding: 32px; margin-bottom: 24px; }
+    .card-title { font-size: 16px; font-weight: 600; margin-bottom: 20px; }
+    
+    .format-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .format-item { padding: 20px; border: 2px solid var(--border); border-radius: 12px; cursor: pointer; transition: all 0.3s; text-align: center; }
+    .format-item:hover { border-color: var(--primary); }
+    .format-item.selected { border-color: var(--primary); background: rgba(24,144,255,0.05); }
+    .format-icon { font-size: 32px; margin-bottom: 8px; }
+    .format-name { font-weight: 500; margin-bottom: 4px; }
+    .format-desc { font-size: 12px; color: #999; }
+
+    .option-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .option-label { font-size: 14px; }
+    .option-value { display: flex; gap: 8px; }
+    .checkbox { display: flex; align-items: center; gap: 8px; }
+    .radio { display: flex; gap: 16px; }
+    .radio label { display: flex; align-items: center; gap: 6px; font-size: 14px; cursor: pointer; }
+
+    .preview-area { background: var(--bg-light); border-radius: 8px; padding: 40px; text-align: center; color: #999; min-height: 200px; display: flex; align-items: center; justify-content: center; }
+
+    .export-btn { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; }
+    .export-btn:hover { background: #096dd9; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h1>导出项目</h1>
+  </header>
+
+  <main class="main">
+    <div class="export-card">
+      <div class="card-title">导出格式</div>
+      <div class="format-grid">
+        <div class="format-item selected">
+          <div class="format-icon">📄</div>
+          <div class="format-name">PDF 文档</div>
+          <div class="format-desc">含交互说明</div>
+        </div>
+        <div class="format-item">
+          <div class="format-icon">🌐</div>
+          <div class="format-name">HTML 静态页面</div>
+          <div class="format-desc">可直接浏览</div>
+        </div>
+        <div class="format-item">
+          <div class="format-icon">🖼️</div>
+          <div class="format-name">图片集 (PNG)</div>
+          <div class="format-desc">所有页面图片</div>
+        </div>
+        <div class="format-item">
+          <div class="format-icon">📋</div>
+          <div class="format-name">JSON 数据</div>
+          <div class="format-desc">可导入导出</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="export-card">
+      <div class="card-title">导出选项</div>
+      <div class="option-row">
+        <span class="option-label">包含内容</span>
+        <div class="option-value">
+          <label class="checkbox"><input type="checkbox" checked> 流程图</label>
+          <label class="checkbox"><input type="checkbox" checked> 所有页面</label>
+          <label class="checkbox"><input type="checkbox"> 交互说明</label>
+        </div>
+      </div>
+      <div class="option-row">
+        <span class="option-label">图片质量</span>
+        <div class="radio">
+          <label><input type="radio" name="quality" checked> 1x</label>
+          <label><input type="radio" name="quality"> 2x</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="export-card">
+      <div class="card-title">预览</div>
+      <div class="preview-area">
+        导出内容预览区域
+      </div>
+    </div>
+
+    <button class="export-btn">开始导出</button>
+  </main>
+</body>
+</html>

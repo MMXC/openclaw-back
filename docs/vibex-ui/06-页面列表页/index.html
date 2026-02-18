@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>页面列表 - VibeX</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { --primary: #1890ff; --bg-light: #f5f5f5; --bg-white: #fff; --border: #e8e8e8; --text-primary: #333; --text-secondary: #666; }
+    body { font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background: var(--bg-light); }
+    
+    .header { height: 56px; background: var(--bg-white); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 24px; gap: 16px; }
+    .back-btn { background: none; border: none; cursor: pointer; font-size: 18px; }
+    .page-title { font-size: 18px; font-weight: 500; }
+    .page-count { color: var(--text-secondary); font-size: 14px; }
+    .header-actions { flex: 1; display: flex; justify-content: flex-end; gap: 8px; }
+    .btn { padding: 6px 16px; border-radius: 6px; font-size: 14px; cursor: pointer; border: 1px solid var(--border); background: var(--bg-white); }
+    .btn-primary { background: var(--primary); color: white; border: none; }
+
+    .main { padding: 24px; max-width: 1200px; margin: 0 auto; }
+    
+    .pages-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    
+    .page-card { background: var(--bg-white); border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: all 0.3s; cursor: pointer; }
+    .page-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+    
+    .page-preview { height: 180px; background: linear-gradient(135deg,#667eea,#764ba2); display: flex; align-items: center; justify-content: center; color: white; font-size: 48px; position: relative; }
+    .page-preview-badge { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.5); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; }
+    
+    .page-info { padding: 16px; }
+    .page-name { font-size: 16px; font-weight: 500; margin-bottom: 8px; }
+    .page-desc { font-size: 14px; color: var(--text-secondary); margin-bottom: 12px; }
+    .page-meta { display: flex; justify-content: space-between; align-items: center; }
+    .page-elements { font-size: 12px; color: #999; background: var(--bg-light); padding: 4px 8px; border-radius: 4px; }
+    .page-actions { display: flex; gap: 8px; }
+    .page-action { width: 28px; height: 28px; border-radius: 6px; border: none; background: var(--bg-light); cursor: pointer; font-size: 14px; }
+    
+    .add-card { border: 2px dashed var(--border); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 280px; cursor: pointer; transition: all 0.3s; background: transparent; }
+    .add-card:hover { border-color: var(--primary); color: var(--primary); }
+    .add-icon { font-size: 32px; margin-bottom: 8px; }
+    .add-text { font-size: 14px; color: #999; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <button class="back-btn">←</button>
+    <span class="page-title">页面列表</span>
+    <span class="page-count">(3 个页面)</span>
+    <div class="header-actions">
+      <button class="btn">筛选</button>
+      <button class="btn btn-primary">+ 添加页面</button>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="pages-grid">
+      <div class="page-card">
+        <div class="page-preview">
+          🏠
+          <span class="page-preview-badge">首页</span>
+        </div>
+        <div class="page-info">
+          <div class="page-name">首页</div>
+          <div class="page-desc">应用入口页面</div>
+          <div class="page-meta">
+            <span class="page-elements">12 元素</span>
+            <div class="page-actions">
+              <button class="page-action">✏️</button>
+              <button class="page-action">📋</button>
+              <button class="page-action">🗑️</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="page-card">
+        <div class="page-preview">
+          👤
+          <span class="page-preview-badge">用户中心</span>
+        </div>
+        <div class="page-info">
+          <div class="page-name">用户中心</div>
+          <div class="page-desc">用户信息管理</div>
+          <div class="page-meta">
+            <span class="page-elements">18 元素</span>
+            <div class="page-actions">
+              <button class="page-action">✏️</button>
+              <button class="page-action">📋</button>
+              <button class="page-action">🗑️</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="page-card">
+        <div class="page-preview">
+          ⚙️
+          <span class="page-preview-badge">设置</span>
+        </div>
+        <div class="page-info">
+          <div class="page-name">设置</div>
+          <div class="page-desc">系统设置</div>
+          <div class="page-meta">
+            <span class="page-elements">8 元素</span>
+            <div class="page-actions">
+              <button class="page-action">✏️</button>
+              <button class="page-action">📋</button>
+              <button class="page-action">🗑️</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="add-card">
+        <div class="add-icon">+</div>
+        <div class="add-text">新建页面</div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
