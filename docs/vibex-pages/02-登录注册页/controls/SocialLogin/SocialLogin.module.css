@@ -1,0 +1,41 @@
+.container {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.wechat {
+  background: #fff;
+  border: 1px solid #07C160;
+  color: #07C160;
+}
+
+.wechat:hover {
+  background: #07C160;
+  color: #fff;
+}
+
+.dingtalk {
+  background: #fff;
+  border: 1px solid #1488F5;
+  color: #1488F5;
+}
+
+.dingtalk:hover {
+  background: #1488F5;
+  color: #fff;
+}
