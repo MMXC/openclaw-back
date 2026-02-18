@@ -1,0 +1,43 @@
+.preview {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #999;
+}
+
+.control {
+  cursor: pointer;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.control:hover {
+  border-color: #91d5ff;
+}
+
+.control.selected {
+  border-color: #1890ff;
+}
+
+.render {
+  padding: 16px;
+}
+
+.code {
+  background: #1e1e1e;
+  color: #d4d4d4;
+  padding: 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  overflow: auto;
+  margin: 0;
+}

@@ -1,0 +1,57 @@
+.playground {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f0f2f5;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.canvas {
+  flex: 1;
+  overflow: auto;
+.sidebar {
+  width: 320px;
+  background: #fff;
+  border-left: 1px solid #e8e8e8;
+  padding: 16px;
+}
+
+: #fff;
+  border-left: 1px solid #e8e8e8;
+  padding: 16px;
+}
+
+.propsPanel h3, .codePanel h3 {
+  font-size: 14px;
+  margin: 0 0 16px;
+}
+
+.prop {
+  margin-bottom: 12px;
+}
+
+.prop label {
+  display: block;
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.prop input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+}
+
+.hint {
+  color: #999;
+  font-size: 13px;
+  text-align: center;
+  padding: 40px 20px;
+}
