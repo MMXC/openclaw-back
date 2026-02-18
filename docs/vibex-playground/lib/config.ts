@@ -169,7 +169,7 @@ export const pages: PageConfig[] = [
         { id: 'header', type: 'PreviewHeader', position: { x: 0, y: 0, spanX: 2 }, size: { width: '100%', height: 56 }, props: {} },
         { id: 'preview', type: 'DevicePreview', position: { x: 0, y: 56 }, size: { width: '1fr', height: '100%' }, props: {} },
         { id: 'tools', type: 'FloatTools', position: { x: 1, y: 56 }, size: { width: 60, height: '100%' }, props: {} },
-        { id: 'nav', type: 'PreviewNav', position 0, y: 'auto',: { x: spanX: 2 }, size: { width: '100%', height: 64 }, props: {} },
+        { id: 'nav', type: 'PreviewNav', position: { x: 0, y: 'auto', spanX: 2 }, size: { width: '100%', height: 64 }, props: {} },
       ],
     },
   },
