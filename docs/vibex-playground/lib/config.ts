@@ -11,9 +11,9 @@ export interface ControlInstance {
   /** 控件类型 */
   type: string;
   /** 控件位置 */
-  position: { x: number; y: number };
+  position: { x: number | string; y: number | string; spanX?: number };
   /** 控件尺寸 */
-  size: { width: number; height: number };
+  size: { width: number | string; height: number | string };
   /** 控件属性 */
   props: Record<string, any>;
   /** 子控件（容器类） */
@@ -37,6 +37,7 @@ export interface PageConfig {
   name: string;
   slug: string;
   route: string;
+  path?: string;
   description?: string;
   /** 页面骨架 */
   skeleton: PageSkeleton;
@@ -259,6 +260,27 @@ export const components: ComponentConfig[] = [
 ];
 
 // 工具函数
+export function getAllPages(): PageConfig[] {
+  return pages;
+}
+
+export function getAllComponents(): ComponentConfig[] {
+  return components;
+}
+
+export function getConfigBySlug(slug: string | string[]): PageConfig | ComponentConfig | undefined {
+  const slugStr = Array.isArray(slug) ? slug.join('/') : slug;
+  if (slugStr.startsWith('component/')) {
+    return getComponentBySlug(slugStr.replace('component/', ''));
+  }
+  return getPageBySlug(slugStr);
+}
+
+export const playgroundConfig = {
+  pages,
+  components,
+};
+
 export function getPageBySlug(slug: string): PageConfig | undefined {
   return pages.find(p => p.slug === slug);
 }
