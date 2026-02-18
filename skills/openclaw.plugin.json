@@ -1,0 +1,26 @@
+{
+  "schema": "openclaw.plugin.v1",
+  "name": "vibex",
+  "description": "VibeX 应用原型生成技能集",
+  "version": "1.0.0",
+  "skills": [
+    {
+      "id": "vibeX-domain-decomposition",
+      "name": "领域拆解",
+      "description": "根据用户需求生成结构化的 MVP 领域列表",
+      "emoji": "🎯"
+    },
+    {
+      "id": "vibeX-flow-nodes",
+      "name": "流程节点",
+      "description": "生成完整的交互流程节点（入口到收口）",
+      "emoji": "🔀"
+    },
+    {
+      "id": "vibeX-ui-components",
+      "name": "UI组件规格",
+      "description": "生成完整 UI 组件树及详细规格",
+      "emoji": "🎨"
+    }
+  ]
+}
