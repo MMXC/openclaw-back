@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from 'react';
 import styles from './AIChatPanel.module.css';
-import styles from './AIChat.module.css';
 
 interface Message {
   role: 'user' | 'assistant';
