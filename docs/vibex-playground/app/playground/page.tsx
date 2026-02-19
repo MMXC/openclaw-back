@@ -151,10 +151,10 @@ const pageConfigsData: Record<string, {
 
 const componentMap: Record<string, React.FC<any>> = {
   Header: () => (
-    <header style={{ padding: '16px 24px', background: '#fff', borderBottom: '1px solid #e8e8e8', display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '100%', boxSizing: 'border-box' }}>
+    <header style={{ padding: '16px 24px', background: '#fff', borderBottom: '1px solid #f0f0f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '100%', boxSizing: 'border-box' }}>
       <div style={{ fontWeight: 700, fontSize: 20 }}>VibeX</div>
       <nav style={{ display: 'flex', gap: 24 }}><span style={{ color: '#666' }}>功能</span><span style={{ color: '#666' }}>定价</span><span style={{ color: '#666' }}>文档</span></nav>
-      <div style={{ display: 'flex', gap: 12 }}><button style={{ padding: '8px 16px', border: 'none', background: 'transparent' }}>登录</button><button style={{ padding: '8px 16px', border: 'none', background: '#1890ff', color: '#fff', borderRadius: 6 }}>开始创建</button></div>
+      <div style={{ display: 'flex', gap: 12 }}><button style={{ padding: '8px 16px', border: 'none', background: 'transparent' }}>登录</button><button style={{ padding: '8px 16px', border: 'none', background: '#1890ff', color: '#fff', borderRadius: 8 }}>开始创建</button></div>
     </header>
   ),
   Hero: () => (
@@ -164,113 +164,113 @@ const componentMap: Record<string, React.FC<any>> = {
     </div>
   ),
   FeatureCard: () => (
-    <div style={{ padding: 24, background: '#fff', borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.08)', height: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-      <div style={{ width: 48, height: 48, background: '#e6f7ff', borderRadius: 12, marginBottom: 16, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>🎯</div>
+    <div style={{ padding: 24, background: '#fff', borderRadius: 16, boxShadow: '0 2px 8px rgba(0,0,0,0.08)', height: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+      <div style={{ width: 48, height: 48, background: '#e6f7ff', borderRadius: 16, marginBottom: 16, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>🎯</div>
       <h3 style={{ margin: '0 0 8px', fontSize: 16 }}>功能特性</h3>
       <p style={{ margin: 0, color: '#666', fontSize: 14 }}>描述文字</p>
     </div>
   ),
-  Footer: () => <footer style={{ padding: 24, background: '#f5f5f5', textAlign: 'center', color: '#666', height: '100%', boxSizing: 'border-box', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>© 2026 VibeX</footer>,
+  Footer: () => <footer style={{ padding: 24, background: '#fafafa', textAlign: 'center', color: '#666', height: '100%', boxSizing: 'border-box', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>© 2026 VibeX</footer>,
   AuthCard: () => (
-    <div style={{ padding: 32, background: '#fff', borderRadius: 12, boxShadow: '0 4px 24px rgba(0,0,0,0.1)', height: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+    <div style={{ padding: 32, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.1)', height: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
       <h2 style={{ margin: '0 0 24px', textAlign: 'center' }}>登录 / 注册</h2>
-      <div style={{ marginBottom: 16 }}><input placeholder="邮箱" style={{ width: '100%', padding: 12, border: '1px solid #d9d9d9', borderRadius: 8, boxSizing: 'border-box' }} /></div>
-      <div style={{ marginBottom: 24 }}><input type="password" placeholder="密码" style={{ width: '100%', padding: 12, border: '1px solid #d9d9d9', borderRadius: 8, boxSizing: 'border-box' }} /></div>
-      <button style={{ width: '100%', padding: 12, background: '#1890ff', color: '#fff', border: 'none', borderRadius: 8 }}>登录</button>
+      <div style={{ marginBottom: 16 }}><input placeholder="邮箱" style={{ width: '100%', padding: 12, border: '1px solid #d9d9d9', borderRadius: 10, boxSizing: 'border-box' }} /></div>
+      <div style={{ marginBottom: 24 }}><input type="password" placeholder="密码" style={{ width: '100%', padding: 12, border: '1px solid #d9d9d9', borderRadius: 10, boxSizing: 'border-box' }} /></div>
+      <button style={{ width: '100%', padding: 12, background: '#1890ff', color: '#fff', border: 'none', borderRadius: 10 }}>登录</button>
     </div>
   ),
-  DashboardHeader: () => <header style={{ padding: '16px 24px', background: '#fff', borderBottom: '1px solid #e8e8e8', height: '100%', boxSizing: 'border-box', display: 'flex', alignItems: 'center' }}><h2 style={{ margin: 0, fontSize: 20 }}>用户中心</h2></header>,
+  DashboardHeader: () => <header style={{ padding: '16px 24px', background: '#fff', borderBottom: '1px solid #f0f0f0', height: '100%', boxSizing: 'border-box', display: 'flex', alignItems: 'center' }}><h2 style={{ margin: 0, fontSize: 20 }}>用户中心</h2></header>,
   Sidebar: () => (
-    <aside style={{ background: '#fff', borderRight: '1px solid #e8e8e8', height: '100%', boxSizing: 'border-box', padding: '16px 0' }}>
+    <aside style={{ background: '#fff', borderRight: '1px solid #f0f0f0', height: '100%', boxSizing: 'border-box', padding: '16px 0' }}>
       {['我的项目', '模板市场', '收藏夹', '设置'].map((item, i) => <div key={i} style={{ padding: '12px 24px', color: i === 0 ? '#1890ff' : '#666' }}>{item}</div>)}
     </aside>
   ),
   ProjectCard: () => (
-    <div style={{ padding: 20, background: '#fff', borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.08)', height: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ width: '100%', flex: 1, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', borderRadius: 8, marginBottom: 16, minHeight: 120 }}></div>
+    <div style={{ padding: 20, background: '#fff', borderRadius: 16, boxShadow: '0 2px 8px rgba(0,0,0,0.08)', height: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ width: '100%', flex: 1, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', borderRadius: 10, marginBottom: 16, minHeight: 120 }}></div>
       <h3 style={{ margin: '0 0 8px', fontSize: 16 }}>我的项目</h3>
       <p style={{ margin: '0 0 12px', color: '#666', fontSize: 14 }}>项目描述</p>
     </div>
   ),
   StatsCard: () => (
-    <div style={{ padding: 24, background: '#fff', borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.08)', height: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+    <div style={{ padding: 24, background: '#fff', borderRadius: 16, boxShadow: '0 2px 8px rgba(0,0,0,0.08)', height: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
       <div style={{ fontSize: 36, fontWeight: 700, color: '#1890ff' }}>12</div>
       <div style={{ fontSize: 14, color: '#666', marginTop: 8 }}>项目数</div>
     </div>
   ),
   ChatHeader: () => (
-    <header style={{ padding: '16px 24px', background: '#fff', borderBottom: '1px solid #e8e8e8', height: '100%', boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <header style={{ padding: '16px 24px', background: '#fff', borderBottom: '1px solid #f0f0f0', height: '100%', boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
       <h2 style={{ margin: 0 }}>AI 对话</h2>
-      <button style={{ padding: '6px 12px', border: '1px solid #d9d9d9', background: '#fff', borderRadius: 6 }}>新对话</button>
+      <button style={{ padding: '6px 12px', border: '1px solid #d9d9d9', background: '#fff', borderRadius: 8 }}>新对话</button>
     </header>
   ),
   MessageList: () => (
     <div style={{ padding: 24, background: '#fff', height: '100%', boxSizing: 'border-box', overflow: 'auto' }}>
-      <div style={{ marginBottom: 24 }}><div style={{ padding: '12px 16px', background: '#f0f0f0', borderRadius: 12, display: 'inline-block', maxWidth: '70%' }}>你好！有什么可以帮助你的？</div></div>
+      <div style={{ marginBottom: 24 }}><div style={{ padding: '12px 16px', background: '#f0f0f0', borderRadius: 16, display: 'inline-block', maxWidth: '70%' }}>你好！有什么可以帮助你的？</div></div>
     </div>
   ),
   InputBox: () => (
-    <div style={{ padding: '16px 24px', background: '#fff', borderTop: '1px solid #e8e8e8', height: '100%', boxSizing: 'border-box', display: 'flex', alignItems: 'center' }}>
+    <div style={{ padding: '16px 24px', background: '#fff', borderTop: '1px solid #f0f0f0', height: '100%', boxSizing: 'border-box', display: 'flex', alignItems: 'center' }}>
       <div style={{ display: 'flex', gap: 12, flex: 1 }}>
-        <input placeholder="告诉 VibeX 你想做什么..." style={{ flex: 1, padding: '12px 16px', border: '1px solid #d9d9d9', borderRadius: 8 }} />
-        <button style={{ padding: '12px 24px', background: '#1890ff', color: '#fff', border: 'none', borderRadius: 8 }}>发送</button>
+        <input placeholder="告诉 VibeX 你想做什么..." style={{ flex: 1, padding: '12px 16px', border: '1px solid #d9d9d9', borderRadius: 10 }} />
+        <button style={{ padding: '12px 24px', background: '#1890ff', color: '#fff', border: 'none', borderRadius: 10 }}>发送</button>
       </div>
     </div>
   ),
   FlowToolbar: () => (
-    <div style={{ padding: 12, background: '#fff', borderBottom: '1px solid #e8e8e8', height: '100%', boxSizing: 'border-box', display: 'flex', gap: 8 }}>
-      <button style={{ padding: '8px 12px', border: '1px solid #d9d9d9', background: '#fff', borderRadius: 6 }}>选择</button>
-      <button style={{ padding: '8px 12px', border: '1px solid #d9d9d9', background: '#fff', borderRadius: 6 }}>连接</button>
-      <button style={{ padding: '8px 12px', border: '1px solid #d9d9d9', background: '#fff', borderRadius: 6 }}>删除</button>
+    <div style={{ padding: 12, background: '#fff', borderBottom: '1px solid #f0f0f0', height: '100%', boxSizing: 'border-box', display: 'flex', gap: 8 }}>
+      <button style={{ padding: '8px 12px', border: '1px solid #d9d9d9', background: '#fff', borderRadius: 8 }}>选择</button>
+      <button style={{ padding: '8px 12px', border: '1px solid #d9d9d9', background: '#fff', borderRadius: 8 }}>连接</button>
+      <button style={{ padding: '8px 12px', border: '1px solid #d9d9d9', background: '#fff', borderRadius: 8 }}>删除</button>
     </div>
   ),
   FlowCanvas: () => (
-    <div style={{ background: '#f5f5f5', height: '100%', boxSizing: 'border-box', position: 'relative' }}>
-      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', padding: 20, background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>流程节点</div>
+    <div style={{ background: '#fafafa', height: '100%', boxSizing: 'border-box', position: 'relative' }}>
+      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', padding: 20, background: '#fff', borderRadius: 10, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>流程节点</div>
     </div>
   ),
   NodePanel: () => (
-    <div style={{ width: '100%', height: '100%', background: '#fff', borderLeft: '1px solid #e8e8e8', boxSizing: 'border-box', padding: 16 }}>
+    <div style={{ width: '100%', height: '100%', background: '#fff', borderLeft: '1px solid #f0f0f0', boxSizing: 'border-box', padding: 16 }}>
       <h4 style={{ margin: '0 0 12px', fontSize: 14 }}>节点</h4>
-      {['开始', 'AI 对话', '条件判断', '结束'].map((n, i) => <div key={i} style={{ padding: 12, background: i === 0 ? '#e6f7ff' : i === 2 ? '#fff7e6' : '#f5f5f5', borderRadius: 6, marginBottom: 8, cursor: 'grab' }}>{n}</div>)}
+      {['开始', 'AI 对话', '条件判断', '结束'].map((n, i) => <div key={i} style={{ padding: 12, background: i === 0 ? '#e6f7ff' : i === 2 ? '#fff7e6' : '#fafafa', borderRadius: 8, marginBottom: 8, cursor: 'grab' }}>{n}</div>)}
     </div>
   ),
   SearchBar: () => (
-    <div style={{ padding: '16px 24px', background: '#fff', borderBottom: '1px solid #e8e8e8', height: '100%', boxSizing: 'border-box' }}>
-      <input placeholder="搜索页面..." style={{ width: '100%', padding: '10px 16px', border: '1px solid #d9d9d9', borderRadius: 8 }} />
+    <div style={{ padding: '16px 24px', background: '#fff', borderBottom: '1px solid #f0f0f0', height: '100%', boxSizing: 'border-box' }}>
+      <input placeholder="搜索页面..." style={{ width: '100%', padding: '10px 16px', border: '1px solid #d9d9d9', borderRadius: 10 }} />
     </div>
   ),
   PageGrid: () => (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 24, padding: 24, height: '100%', boxSizing: 'border-box', overflow: 'auto' }}>
-      {[1,2,3].map(i => <div key={i} style={{ aspectRatio: '16/9', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', borderRadius: 8 }}></div>)}
+      {[1,2,3].map(i => <div key={i} style={{ aspectRatio: '16/9', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', borderRadius: 10 }}></div>)}
     </div>
   ),
   EditorToolbar: () => (
-    <div style={{ padding: '8px 16px', background: '#fff', borderBottom: '1px solid #e8e8e8', height: '100%', boxSizing: 'border-box', display: 'flex', gap: 8 }}>
+    <div style={{ padding: '8px 16px', background: '#fff', borderBottom: '1px solid #f0f0f0', height: '100%', boxSizing: 'border-box', display: 'flex', gap: 8 }}>
       <button style={{ padding: '6px 12px', border: '1px solid #d9d9d9', background: '#fff', borderRadius: 4 }}>撤销</button>
       <button style={{ padding: '6px 12px', border: '1px solid #d9d9d9', background: '#fff', borderRadius: 4 }}>重做</button>
       <button style={{ padding: '6px 12px', border: 'none', background: '#1890ff', color: '#fff', borderRadius: 4 }}>保存</button>
     </div>
   ),
   ComponentPanel: () => (
-    <div style={{ width: '100%', height: '100%', background: '#fff', borderRight: '1px solid #e8e8e8', boxSizing: 'border-box', padding: 16 }}>
+    <div style={{ width: '100%', height: '100%', background: '#fff', borderRight: '1px solid #f0f0f0', boxSizing: 'border-box', padding: 16 }}>
       <h4 style={{ margin: '0 0 16px', fontSize: 14 }}>组件</h4>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>{['文','图','布','按','输','卡'].map((c, i) => <div key={i} style={{ aspectRatio: '1', background: '#f5f5f5', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'grab' }}>{c}</div>)}</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>{['文','图','布','按','输','卡'].map((c, i) => <div key={i} style={{ aspectRatio: '1', background: '#fafafa', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'grab' }}>{c}</div>)}</div>
     </div>
   ),
   PropertyPanel: () => (
-    <div style={{ width: '100%', height: '100%', background: '#fff', borderLeft: '1px solid #e8e8e8', boxSizing: 'border-box', padding: 16 }}>
+    <div style={{ width: '100%', height: '100%', background: '#fff', borderLeft: '1px solid #f0f0f0', boxSizing: 'border-box', padding: 16 }}>
       <h4 style={{ margin: '0 0 16px', fontSize: 14 }}>属性</h4>
       {['宽度', '高度'].map((p, i) => <div key={i} style={{ marginBottom: 12 }}><label style={{ display: 'block', fontSize: 12, color: '#666', marginBottom: 4 }}>{p}</label><input defaultValue={p === '宽度' ? '100%' : 'auto'} style={{ width: '100%', padding: 6, border: '1px solid #d9d9d9', borderRadius: 4 }} /></div>)}
     </div>
   ),
   DeviceSwitcher: () => (
-    <div style={{ padding: 12, background: '#fff', borderBottom: '1px solid #e8e8e8', height: '100%', boxSizing: 'border-box', display: 'flex', justifyContent: 'center', gap: 16 }}>
-      {['手机', '平板', '桌面'].map((d, i) => <button key={i} style={{ padding: '8px 16px', border: '1px solid #d9d9d9', background: i === 0 ? '#1890ff' : '#fff', color: i === 0 ? '#fff' : '#666', borderRadius: 6 }}>{d}</button>)}
+    <div style={{ padding: 12, background: '#fff', borderBottom: '1px solid #f0f0f0', height: '100%', boxSizing: 'border-box', display: 'flex', justifyContent: 'center', gap: 16 }}>
+      {['手机', '平板', '桌面'].map((d, i) => <button key={i} style={{ padding: '8px 16px', border: '1px solid #d9d9d9', background: i === 0 ? '#1890ff' : '#fff', color: i === 0 ? '#fff' : '#666', borderRadius: 8 }}>{d}</button>)}
     </div>
   ),
   DeviceFrame: ({ children }: any) => (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', background: '#f5f5f5', boxSizing: 'border-box' }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', background: '#fafafa', boxSizing: 'border-box' }}>
       <div style={{ width: 375, height: 667, background: '#fff', borderRadius: 40, border: '12px solid #333', overflow: 'hidden' }}>
         <div style={{ height: 30, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ width: 80, height: 6, background: '#ddd', borderRadius: 3 }}></div></div>
         <div style={{ height: 'calc(100% - 30px)', overflow: 'auto' }}>{children}</div>
@@ -289,18 +289,18 @@ const componentMap: Record<string, React.FC<any>> = {
     </div>
   ),
   DownloadButton: () => (
-    <div style={{ padding: 24, background: '#fff', borderTop: '1px solid #e8e8e8', height: '100%', boxSizing: 'border-box', display: 'flex', alignItems: 'center' }}>
-      <button style={{ width: '100%', padding: 14, background: '#52c41a', color: '#fff', border: 'none', borderRadius: 8, fontSize: 16 }}>下载代码</button>
+    <div style={{ padding: 24, background: '#fff', borderTop: '1px solid #f0f0f0', height: '100%', boxSizing: 'border-box', display: 'flex', alignItems: 'center' }}>
+      <button style={{ width: '100%', padding: 14, background: '#52c41a', color: '#fff', border: 'none', borderRadius: 10, fontSize: 16 }}>下载代码</button>
     </div>
   ),
   SettingsNav: () => (
-    <nav style={{ width: '100%', height: '100%', background: '#fff', borderRight: '1px solid #e8e8e8', boxSizing: 'border-box', padding: '16px 0' }}>
+    <nav style={{ width: '100%', height: '100%', background: '#fff', borderRight: '1px solid #f0f0f0', boxSizing: 'border-box', padding: '16px 0' }}>
       {['基本信息', '团队成员', '域名设置', '付费记录'].map((item, i) => <div key={i} style={{ padding: '12px 24px', color: i === 0 ? '#1890ff' : '#666', background: i === 0 ? '#e6f7ff' : 'transparent' }}>{item}</div>)}
     </nav>
   ),
   ProjectForm: () => (
     <div style={{ flex: 1, padding: 24, background: '#fff', height: '100%', boxSizing: 'border-box' }}>
-      {['项目名称', '项目描述'].map((label, i) => <div key={i} style={{ marginBottom: 20 }}><label style={{ display: 'block', marginBottom: 8, fontWeight: 500 }}>{label}</label><input defaultValue={i === 0 ? '我的项目' : '这是一个 AI 原型项目'} style={{ width: '100%', maxWidth: 400, padding: 10, border: '1px solid #d9d9d9', borderRadius: 8 }} /></div>)}
+      {['项目名称', '项目描述'].map((label, i) => <div key={i} style={{ marginBottom: 20 }}><label style={{ display: 'block', marginBottom: 8, fontWeight: 500 }}>{label}</label><input defaultValue={i === 0 ? '我的项目' : '这是一个 AI 原型项目'} style={{ width: '100%', maxWidth: 400, padding: 10, border: '1px solid #d9d9d9', borderRadius: 10 }} /></div>)}
     </div>
   ),
   TeamList: () => (
@@ -310,13 +310,13 @@ const componentMap: Record<string, React.FC<any>> = {
     </div>
   ),
   CategoryFilter: () => (
-    <div style={{ padding: '16px 24px', background: '#fff', borderBottom: '1px solid #e8e8e8', height: '100%', boxSizing: 'border-box', display: 'flex', gap: 12 }}>
+    <div style={{ padding: '16px 24px', background: '#fff', borderBottom: '1px solid #f0f0f0', height: '100%', boxSizing: 'border-box', display: 'flex', gap: 12 }}>
       {['全部', '登录', '仪表盘', '电商', '社交'].map((c, i) => <button key={i} style={{ padding: '6px 16px', border: '1px solid #d9d9d9', background: i === 0 ? '#1890ff' : '#fff', color: i === 0 ? '#fff' : '#666', borderRadius: 16 }}>{c}</button>)}
     </div>
   ),
   TemplateGrid: () => (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 24, padding: 24, height: '100%', boxSizing: 'border-box', overflow: 'auto' }}>
-      {[1,2,3,4,5,6].map(i => <div key={i} style={{ background: '#fff', borderRadius: 12, overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}><div style={{ aspectRatio: '16/9', background: `hsl(${(i * 60) % 360}, 60%, 70%)` }}></div><div style={{ padding: 16 }}><h3 style={{ margin: '0 0 8px' }}>模板 {i}</h3><p style={{ margin: 0, color: '#666', fontSize: 14 }}>模板描述</p></div></div>)}
+      {[1,2,3,4,5,6].map(i => <div key={i} style={{ background: '#fff', borderRadius: 16, overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}><div style={{ aspectRatio: '16/9', background: `hsl(${(i * 60) % 360}, 60%, 70%)` }}></div><div style={{ padding: 16 }}><h3 style={{ margin: '0 0 8px' }}>模板 {i}</h3><p style={{ margin: 0, color: '#666', fontSize: 14 }}>模板描述</p></div></div>)}
     </div>
   ),
   UserProfile: () => (
@@ -328,7 +328,7 @@ const componentMap: Record<string, React.FC<any>> = {
   AvatarUpload: () => (
     <div style={{ padding: 24, background: '#fff', height: '100%', boxSizing: 'border-box' }}>
       <div style={{ width: 120, height: 120, background: '#f0f0f0', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>点击上传</div>
-      <button style={{ padding: '10px 24px', border: '1px solid #d9d9d9', background: '#fff', borderRadius: 8 }}>选择图片</button>
+      <button style={{ padding: '10px 24px', border: '1px solid #d9d9d9', background: '#fff', borderRadius: 10 }}>选择图片</button>
     </div>
   ),
   PreferenceForm: () => (
