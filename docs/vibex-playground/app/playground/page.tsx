@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { DndContext, DragEndEvent, useDraggable, useDroppable } from '@dnd-kit/core';
 import { CodeEditor } from './components/CodeEditor';
@@ -224,7 +224,7 @@ const componentMap: Record<string, React.ComponentType<any>> = {
 
 const sidebarComponents = Object.keys(componentMap).map(type => ({ type, name: type }));
 
-export default function Playground() {
+function PlaygroundContent() {
   const searchParams = useSearchParams();
   const pageSlug = searchParams.get('page') || 'landing';
   const config = pageConfigsData[pageSlug] || { name: '新页面', controls: [] };
@@ -337,4 +337,12 @@ function DraggableItem({ type, name }: { type: string; name: string }) {
 function DropArea({ children }: { children: React.ReactNode }) {
   const { setNodeRef, isOver } = useDroppable({ id: 'canvas' });
   return <div ref={setNodeRef} className={styles.canvas} style={{ background: isOver ? '#e6f7ff' : '#f5f5f5' }}>{children}</div>;
+}
+
+export default function Playground() {
+  return (
+    <Suspense fallback={<div style={{ padding: 40, textAlign: 'center', color: '#999' }}>加载中...</div>}>
+      <PlaygroundContent />
+    </Suspense>
+  );
 }
