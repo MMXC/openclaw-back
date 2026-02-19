@@ -191,16 +191,15 @@ function PlaygroundContent() {
 
   // 拖拽放置
   const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
+    const { active, over, delta } = event;
     setActiveId(null);
     
     if (over && over.id === 'canvas') {
       const compType = String(active.id);
       if (componentMap[compType]) {
-        // 计算放置位置
-        const rect = canvasRef.current?.getBoundingClientRect();
-        const x = rect ? (event.delta.startX - rect.left) : 100;
-        const y = rect ? (event.delta.startY - rect.top) : 100;
+        // 计算放置位置（使用 delta 相对移动）
+        const x = 100 + delta.x;
+        const y = 100 + delta.y;
         
         const newControl: Control = {
           id: `${compType}_${Date.now()}`,
