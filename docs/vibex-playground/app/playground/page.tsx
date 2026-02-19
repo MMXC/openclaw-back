@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { DndContext, DragEndEvent, useDraggable, useDroppable } from '@dnd-kit/core';
 import { CodeEditor } from './components/CodeEditor';
 import { PreviewPanel } from './components/PreviewPanel';
@@ -117,10 +118,57 @@ const defaultCode: Record<string, string> = {
 };
 
 export default function Playground() {
+  const searchParams = useSearchParams();
+  const pageSlug = searchParams.get('page');
+  
+  // 根据 URL 参数加载页面配置
+  const getInitialPageConfig = () => {
+    const pageConfigs: Record<string, { name: string; controls: any[] }> = {
+      landing: {
+        name: '落地页',
+        controls: [
+          { type: 'Header', props: { title: 'VibeX - AI 原型生成平台' } },
+          { type: 'Hero', props: { title: '让想法快速变成产品', subtitle: '用 AI 生成页面原型' } },
+          { type: 'Footer', props: { text: '© 2026 VibeX' } },
+        ]
+      },
+      auth: {
+        name: '登录注册页',
+        controls: [
+          { type: 'Card', props: { title: '登录 / 注册', children: '表单内容' } },
+        ]
+      },
+      dashboard: {
+        name: '用户中心',
+        controls: [
+          { type: 'Header', props: { title: '用户中心' } },
+          { type: 'Sidebar', props: { items: ['我的项目', '模板市场', '收藏夹', '设置'] } },
+          { type: 'Footer', props: { text: '© 2026 VibeX' } },
+        ]
+      },
+      chat: {
+        name: 'AI对话页',
+        controls: [
+          { type: 'Header', props: { title: 'AI 对话' } },
+          { type: 'Input', props: { placeholder: '告诉 VibeX 你想做什么...' } },
+        ]
+      },
+    };
+    return pageConfigs[pageSlug || ''] || { name: '新页面', controls: [] };
+  };
+
+  const initialConfig = getInitialPageConfig();
+  
   const [page, setPage] = useState<PageState>({
-    id: 'page_01',
-    name: '新页面',
-    controls: [],
+    id: pageSlug ? `page_${pageSlug}` : 'page_01',
+    name: initialConfig.name,
+    controls: initialConfig.controls.map((c, i) => ({
+      id: `${c.type}_${i}`,
+      type: c.type,
+      name: defaultComponents.find(dc => dc.type === c.type)?.name || c.type,
+      props: c.props,
+      code: '',
+    })),
   });
   
   const [selectedControl, setSelectedControl] = useState<Control | null>(null);
