@@ -1,14 +1,13 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { DndContext, DragEndEvent, DragOverlay, useDraggable, useDroppable } from '@dnd-kit/core';
+import { DndContext, DragEndEvent, useDraggable, useDroppable } from '@dnd-kit/core';
 import { CodeEditor } from './components/CodeEditor';
 import { PreviewPanel } from './components/PreviewPanel';
-import { ComponentList } from './components/ComponentList';
 import { Toolbar } from './components/Toolbar';
+import { AIChat } from './components/AIChat';
 import styles from './playground.module.css';
 
-// 控件定义
 interface Control {
   id: string;
   type: string;
@@ -17,7 +16,6 @@ interface Control {
   code?: string;
 }
 
-// 页面状态
 interface PageState {
   id: string;
   name: string;
@@ -129,8 +127,8 @@ export default function Playground() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'ui' | 'code'>('ui');
   const [code, setCode] = useState<Record<string, string>>(defaultCode);
+  const [aiChatOpen, setAiChatOpen] = useState(false);
 
-  // 拖拽结束
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     setActiveId(null);
@@ -155,7 +153,6 @@ export default function Playground() {
     }
   };
 
-  // 更新控件属性
   const updateControl = (id: string, updates: Partial<Control>) => {
     setPage(p => ({
       ...p,
@@ -166,21 +163,17 @@ export default function Playground() {
     }
   };
 
-  // 更新控件源码
   const updateCode = (type: string, newCode: string) => {
     setCode(c => ({ ...c, [type]: newCode }));
-    // 更新使用该类型的所有控件
     setPage(p => ({
       ...p,
       controls: p.controls.map(c => c.type === type ? { ...c, code: newCode } : c),
     }));
-    // 同时更新选中控件
     if (selectedControl?.type === type) {
       setSelectedControl(s => s ? { ...s, code: newCode } : null);
     }
   };
 
-  // 删除控件
   const deleteControl = (id: string) => {
     setPage(p => ({
       ...p,
@@ -191,7 +184,6 @@ export default function Playground() {
     }
   };
 
-  // 导出配置
   const exportConfig = () => {
     const config = JSON.stringify({ page, code }, null, 2);
     const blob = new Blob([config], { type: 'application/json' });
@@ -202,13 +194,17 @@ export default function Playground() {
     a.click();
   };
 
+  const applyAiChange = (changes: string) => {
+    console.log('Apply AI changes:', changes);
+    // 解析 AI 返回的代码并应用
+  };
+
   return (
     <DndContext 
       onDragStart={(e) => setActiveId(String(e.active.id))} 
       onDragEnd={handleDragEnd}
     >
       <div className={styles.playground}>
-        {/* 顶部工具栏 */}
         <Toolbar 
           pageName={page.name}
           onNameChange={name => setPage(p => ({ ...p, name }))}
@@ -217,8 +213,15 @@ export default function Playground() {
           onViewModeChange={setViewMode}
         />
 
+        {/* AI 对话悬浮按钮 */}
+        <button 
+          className={styles.aiButton}
+          onClick={() => setAiChatOpen(true)}
+        >
+          🤖 AI
+        </button>
+
         <div className={styles.main}>
-          {/* 左侧组件列表 - 使用 Draggable */}
           <div className={styles.sidebar}>
             <h3 className={styles.title}>🧩 组件库</h3>
             <p className={styles.hint}>拖拽到右侧画布</p>
@@ -229,7 +232,6 @@ export default function Playground() {
             </div>
           </div>
 
-          {/* 中间画布 - 使用 Droppable */}
           <DropArea>
             <PreviewPanel 
               controls={page.controls}
@@ -241,7 +243,6 @@ export default function Playground() {
             />
           </DropArea>
 
-          {/* 右侧属性/代码编辑器 */}
           <div className={styles.rightPanel}>
             {selectedControl ? (
               viewMode === 'ui' ? (
@@ -279,11 +280,22 @@ export default function Playground() {
           </div>
         </div>
       </div>
+
+      <AIChat 
+        isOpen={aiChatOpen} 
+        onClose={() => setAiChatOpen(false)}
+        selectedControls={selectedControl ? [{ 
+          id: selectedControl.id, 
+          type: selectedControl.type, 
+          code: code[selectedControl.type] || '' 
+        }] : []}
+        pageCode={JSON.stringify({ page, code }, null, 2)}
+        onApplyChange={applyAiChange}
+      />
     </DndContext>
   );
 }
 
-// 可拖拽组件
 function DraggableItem({ type, name }: { type: string; name: string }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: type });
   
@@ -300,7 +312,6 @@ function DraggableItem({ type, name }: { type: string; name: string }) {
   );
 }
 
-// 放置区域
 function DropArea({ children }: { children: React.ReactNode }) {
   const { setNodeRef, isOver } = useDroppable({ id: 'canvas' });
   
