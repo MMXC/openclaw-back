@@ -271,7 +271,7 @@ function PlaygroundContent() {
   return (
     <DndContext onDragStart={(e) => setActiveId(String(e.active.id))} onDragEnd={handleDragEnd}>
       <div className={styles.playground}>
-        <Toolbar pageName={page.name} onNameChange={() => {}} onExport={exportConfig} />
+        <Toolbar pageName={page.name} onNameChange={() => {}} onExport={exportConfig} viewMode="ui" onViewModeChange={() => {}} />
         
         <button className={styles.aiButton} onClick={() => setAiChatOpen(true)}>🤖 AI</button>
 
