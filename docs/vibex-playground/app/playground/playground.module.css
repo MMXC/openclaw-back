@@ -1,18 +1,18 @@
 .playground {
-  height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #f0f2f5;
+  height: 100vh;
+  background: #f5f5f5;
 }
 
 .main {
-  flex: 1;
   display: flex;
+  flex: 1;
   overflow: hidden;
 }
 
 .sidebar {
-  width: 180px;
+  width: 200px;
   background: #fff;
   border-right: 1px solid #e8e8e8;
   padding: 16px;
@@ -21,89 +21,156 @@
 
 .title {
   font-size: 14px;
-  margin: 0 0 8px;
   font-weight: 600;
+  margin: 0 0 16px;
+  color: #333;
 }
 
-.hint {
+.componentSection {
+  margin-bottom: 16px;
+}
+
+.sectionTitle {
   font-size: 12px;
   color: #999;
-  margin: 0 0 16px;
+  margin-bottom: 8px;
+  padding: 4px 0;
 }
 
-.componentGrid {
+.componentList {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
 }
 
 .draggable {
-  padding: 10px 12px;
+  padding: 8px 12px;
   background: #f5f5f5;
   border-radius: 6px;
   cursor: grab;
   font-size: 13px;
   transition: all 0.2s;
-  border: 1px solid transparent;
 }
 
 .draggable:hover {
   background: #e6f7ff;
-  border-color: #1890ff;
+  color: #1890ff;
 }
 
-.canvas {
+.canvasWrapper {
   flex: 1;
   overflow: auto;
   padding: 24px;
 }
 
+.canvas {
+  position: relative;
+  min-width: 1200px;
+  min-height: 800px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.controlItem {
+  cursor: move;
+  box-sizing: border-box;
+}
+
+.controlItem.selected {
+  outline: 2px solid #1890ff;
+  outline-offset: -2px;
+}
+
+.controlItem.dragging {
+  opacity: 0.8;
+  z-index: 100;
+}
+
+.controlLabel {
+  position: absolute;
+  top: -24px;
+  left: 0;
+  background: #1890ff;
+  color: #fff;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px 4px 0 0;
+  white-space: nowrap;
+}
+
+.resizeHandle {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 16px;
+  height: 16px;
+  cursor: se-resize;
+  background: linear-gradient(135deg, transparent 50%, #1890ff 50%);
+  border-radius: 0 0 4px 0;
+}
+
 .rightPanel {
-  width: 320px;
+  width: 260px;
   background: #fff;
   border-left: 1px solid #e8e8e8;
   padding: 16px;
   overflow-y: auto;
 }
 
-.propsPanel h3, .codePanel h3 {
+.propsPanel h3 {
   font-size: 14px;
-  margin: 0 0 16px;
+  margin: '0 0 16px';
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f0f0;
 }
 
-.propList {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.propGroup {
+  margin-bottom: 16px;
 }
 
-.prop {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.prop label {
+.propGroup label {
+  display: block;
   font-size: 12px;
   color: #666;
+  margin-bottom: 8px;
 }
 
-.prop input {
-  padding: 8px 12px;
-  border: 1px solid #d9d9d9;
-  border-radius: 6px;
-  font-size: 13px;
-}
-
-.prop input:focus {
-  border-color: #1890ff;
-  outline: none;
-}
-
-.codePanel {
-  height: 100%;
+.propRow {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.propRow span {
+  font-size: 12px;
+  color: #999;
+  min-width: 16px;
+}
+
+.propRow input {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  font-size: 13px;
+  width: 60px;
+}
+
+.deleteBtn {
+  width: 100%;
+  padding: 10px;
+  background: #fff1f0;
+  color: #ff4d4f;
+  border: 1px solid #ffccc7;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  margin-top: 24px;
+}
+
+.deleteBtn:hover {
+  background: #ffebe8;
 }
 
 .hint {
@@ -127,57 +194,9 @@
   font-size: 20px;
   cursor: pointer;
   box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
-  transition: all 0.3s;
   z-index: 100;
 }
 
 .aiButton:hover {
   transform: scale(1.1);
-  box-shadow: 0 6px 24px rgba(102, 126, 234, 0.5);
-}
-
-.previewContainer {
-  min-height: 100%;
-  padding: 24px;
-}
-
-.emptyCanvas {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 400px;
-  color: #999;
-}
-
-.previewContent {
-  display: flex;
-  flex-direction: column;
-}
-
-.controlSelected {
-  position: relative;
-  outline: 2px solid #1890ff;
-  outline-offset: 2px;
-}
-
-.deleteBtn {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  border: none;
-  background: #ff4d4f;
-  color: #fff;
-  cursor: pointer;
-  font-size: 16px;
-  display: none;
-  align-items: center;
-  justify-content: center;
-}
-
-.controlSelected .deleteBtn {
-  display: flex;
 }
