@@ -4,7 +4,7 @@ import { useState, useEffect, Suspense, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { DndContext, DragEndEvent, useDraggable, useDroppable } from '@dnd-kit/core';
 import { Toolbar } from './components/Toolbar';
-import { AIChat } from './components/AIChat';
+import { AIChatPanel } from './components/AIChatPanel';
 import styles from './playground.module.css';
 
 interface Position {
@@ -194,7 +194,6 @@ function PlaygroundContent() {
   const [page, setPage] = useState<PageState>({ id: '', name: config.name, controls: [] });
   const [selectedControl, setSelectedControl] = useState<Control | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [aiChatOpen, setAiChatOpen] = useState(false);
   const canvasRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -296,8 +295,6 @@ function PlaygroundContent() {
     <DndContext onDragStart={(e) => setActiveId(String(e.active.id))} onDragEnd={handleDragEnd}>
       <div className={styles.playground}>
         <Toolbar pageName={page.name} onNameChange={() => {}} onExport={exportConfig} viewMode="ui" onViewModeChange={() => {}} />
-        
-        <button className={styles.aiButton} onClick={() => setAiChatOpen(true)}>🤖 AI</button>
 
         <div className={styles.main}>
           {/* 左侧菜单 */}
@@ -398,71 +395,73 @@ function PlaygroundContent() {
             </div>
           )}
 
-          {/* 右侧属性面板 */}
+          {/* 右侧属性面板 + AI助手 */}
           {activeTab === 'page' && (
             <div className={styles.rightPanel}>
-              {selectedControl ? (
-                <div className={styles.propsPanel}>
-                  <h3>✏️ {selectedControl.type}</h3>
-                  
-                  <div className={styles.propGroup}>
-                    <label>位置</label>
-                    <div className={styles.propRow}>
-                      <span>X</span>
-                      <input 
-                        type="number" 
-                        value={selectedControl.position.x} 
-                        onChange={e => updateControl(selectedControl.id, { position: { ...selectedControl.position, x: Number(e.target.value) } })}
-                      />
-                      <span>Y</span>
-                      <input 
-                        type="number" 
-                        value={selectedControl.position.y} 
-                        onChange={e => updateControl(selectedControl.id, { position: { ...selectedControl.position, y: Number(e.target.value) } })}
-                      />
+              <div className={styles.propsSection}>
+                {selectedControl ? (
+                  <div className={styles.propsPanel}>
+                    <h3>✏️ {selectedControl.type}</h3>
+                    
+                    <div className={styles.propGroup}>
+                      <label>位置</label>
+                      <div className={styles.propRow}>
+                        <span>X</span>
+                        <input 
+                          type="number" 
+                          value={selectedControl.position.x} 
+                          onChange={e => updateControl(selectedControl.id, { position: { ...selectedControl.position, x: Number(e.target.value) } })}
+                        />
+                        <span>Y</span>
+                        <input 
+                          type="number" 
+                          value={selectedControl.position.y} 
+                          onChange={e => updateControl(selectedControl.id, { position: { ...selectedControl.position, y: Number(e.target.value) } })}
+                        />
+                      </div>
                     </div>
-                  </div>
 
-                  <div className={styles.propGroup}>
-                    <label>尺寸</label>
-                    <div className={styles.propRow}>
-                      <span>W</span>
-                      <input 
-                        type="number" 
-                        value={selectedControl.size.width} 
-                        onChange={e => updateControl(selectedControl.id, { size: { ...selectedControl.size, width: Number(e.target.value) } })}
-                      />
-                      <span>H</span>
-                      <input 
-                        type="number" 
-                        value={selectedControl.size.height} 
-                        onChange={e => updateControl(selectedControl.id, { size: { ...selectedControl.size, height: Number(e.target.value) } })}
-                      />
+                    <div className={styles.propGroup}>
+                      <label>尺寸</label>
+                      <div className={styles.propRow}>
+                        <span>W</span>
+                        <input 
+                          type="number" 
+                          value={selectedControl.size.width} 
+                          onChange={e => updateControl(selectedControl.id, { size: { ...selectedControl.size, width: Number(e.target.value) } })}
+                        />
+                        <span>H</span>
+                        <input 
+                          type="number" 
+                          value={selectedControl.size.height} 
+                          onChange={e => updateControl(selectedControl.id, { size: { ...selectedControl.size, height: Number(e.target.value) } })}
+                        />
+                      </div>
                     </div>
-                  </div>
 
-                  <button className={styles.deleteBtn} onClick={() => deleteControl(selectedControl.id)}>🗑️ 删除控件</button>
-                </div>
-              ) : (
-                <div className={styles.hint}>
-                  👈 拖拽组件到画布<br/>
-                  🎯 点击控件查看/编辑<br/>
-                  ↘️ 拖拽右下角调整大小<br/>
-                  ☐ 显示网格吸附
-                </div>
-              )}
+                    <button className={styles.deleteBtn} onClick={() => deleteControl(selectedControl.id)}>🗑️ 删除控件</button>
+                  </div>
+                ) : (
+                  <div className={styles.hint}>
+                    👈 拖拽组件到画布<br/>
+                    🎯 点击控件查看/编辑<br/>
+                    ↘️ 拖拽右下角调整大小
+                  </div>
+                )}
+              </div>
+              
+              {/* AI 助手面板 */}
+              <div className={styles.aiSection}>
+                <AIChatPanel 
+                  selectedControl={selectedControl ? { id: selectedControl.id, type: selectedControl.type, code: '' } : null}
+                  pageCode={JSON.stringify({ page }, null, 2)}
+                  onApplyChange={() => {}}
+                />
+              </div>
             </div>
           )}
         </div>
       </div>
-
-      <AIChat 
-        isOpen={aiChatOpen} 
-        onClose={() => setAiChatOpen(false)} 
-        selectedControls={selectedControl ? [{ id: selectedControl.id, type: selectedControl.type, code: '' }] : []} 
-        pageCode={JSON.stringify({ page }, null, 2)} 
-        onApplyChange={() => {}} 
-      />
     </DndContext>
   );
 }
