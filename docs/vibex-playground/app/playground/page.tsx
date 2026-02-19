@@ -1,13 +1,3 @@
-/**
- * VibeX Playground - 拖拽式页面原型编辑器
- * 
- * 功能：
- * - 拖拽控件到画布
- * - 点击控件显示 UI / 源码 (Tab切换)
- * - 在线编辑控件源码，实时预览
- * - 导出页面配置
- */
-
 'use client';
 
 import { useState, useCallback } from 'react';
@@ -84,6 +74,48 @@ const defaultCode: Record<string, string> = {
     }}
   />
 );`,
+  Header: `export const Header = ({ title }) => (
+  <div style={{
+    padding: '16px 24px',
+    background: '#fff',
+    borderBottom: '1px solid #e8e8e8',
+  }}>
+    <h2 style={{ margin: 0 }}>{title}</h2>
+  </div>
+);`,
+  Hero: `export const Hero = ({ title, subtitle }) => (
+  <div style={{
+    padding: '60px 24px',
+    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    color: '#fff',
+    textAlign: 'center',
+  }}>
+    <h1 style={{ margin: '0 0 16px', fontSize: '48px' }}>{title}</h1>
+    <p style={{ margin: 0, fontSize: '18px', opacity: 0.9 }}>{subtitle}</p>
+  </div>
+);`,
+  Sidebar: `export const Sidebar = ({ items }) => (
+  <div style={{
+    width: '200px',
+    background: '#fff',
+    borderRight: '1px solid #e8e8e8',
+    padding: '16px 0',
+  }}>
+    {items.map((item, i) => (
+      <div key={i} style={{ padding: '12px 24px', cursor: 'pointer' }}>{item}</div>
+    ))}
+  </div>
+);`,
+  Footer: `export const Footer = ({ text }) => (
+  <div style={{
+    padding: '24px',
+    background: '#f5f5f5',
+    textAlign: 'center',
+    color: '#666',
+  }}>
+    {text}
+  </div>
+);`,
 };
 
 export default function Playground() {
@@ -104,7 +136,8 @@ export default function Playground() {
     setActiveId(null);
     
     if (over && over.id === 'canvas') {
-      const comp = defaultComponents.find(c => c.type === active.id);
+      const compType = String(active.id);
+      const comp = defaultComponents.find(c => c.type === compType);
       if (comp) {
         const newControl: Control = {
           id: `${comp.type}_${Date.now()}`,
@@ -117,6 +150,7 @@ export default function Playground() {
           ...p,
           controls: [...p.controls, newControl],
         }));
+        setSelectedControl(newControl);
       }
     }
   };
@@ -140,6 +174,10 @@ export default function Playground() {
       ...p,
       controls: p.controls.map(c => c.type === type ? { ...c, code: newCode } : c),
     }));
+    // 同时更新选中控件
+    if (selectedControl?.type === type) {
+      setSelectedControl(s => s ? { ...s, code: newCode } : null);
+    }
   };
 
   // 删除控件
@@ -165,7 +203,10 @@ export default function Playground() {
   };
 
   return (
-    <DndContext onDragStart={e => setActiveId(String(e.active.id))} onDragEnd={handleDragEnd}>
+    <DndContext 
+      onDragStart={(e) => setActiveId(String(e.active.id))} 
+      onDragEnd={handleDragEnd}
+    >
       <div className={styles.playground}>
         {/* 顶部工具栏 */}
         <Toolbar 
@@ -177,46 +218,52 @@ export default function Playground() {
         />
 
         <div className={styles.main}>
-          {/* 左侧组件列表 */}
-          <ComponentList 
-            components={defaultComponents}
-            selectedControl={selectedControl}
-            onSelect={setSelectedControl}
-            onDelete={deleteControl}
-          />
+          {/* 左侧组件列表 - 使用 Draggable */}
+          <div className={styles.sidebar}>
+            <h3 className={styles.title}>🧩 组件库</h3>
+            <p className={styles.hint}>拖拽到右侧画布</p>
+            <div className={styles.componentGrid}>
+              {defaultComponents.map(comp => (
+                <DraggableItem key={comp.type} type={comp.type} name={comp.name} />
+              ))}
+            </div>
+          </div>
 
-          {/* 中间画布 */}
+          {/* 中间画布 - 使用 Droppable */}
           <DropArea>
             <PreviewPanel 
               controls={page.controls}
               selectedControl={selectedControl}
               onSelect={setSelectedControl}
+              onDelete={deleteControl}
               code={code}
               viewMode={viewMode}
             />
           </DropArea>
 
           {/* 右侧属性/代码编辑器 */}
-          <div className={styles.sidebar}>
+          <div className={styles.rightPanel}>
             {selectedControl ? (
               viewMode === 'ui' ? (
                 <div className={styles.propsPanel}>
-                  <h3>属性编辑器</h3>
-                  {Object.entries(selectedControl.props).map(([key, value]) => (
-                    <div key={key} className={styles.prop}>
-                      <label>{key}</label>
-                      <input
-                        value={value as string}
-                        onChange={e => updateControl(selectedControl.id, {
-                          props: { ...selectedControl.props, [key]: e.target.value }
-                        })}
-                      />
-                    </div>
-                  ))}
+                  <h3>✏️ 属性编辑器</h3>
+                  <div className={styles.propList}>
+                    {Object.entries(selectedControl.props).map(([key, value]) => (
+                      <div key={key} className={styles.prop}>
+                        <label>{key}</label>
+                        <input
+                          value={value as string}
+                          onChange={e => updateControl(selectedControl.id, {
+                            props: { ...selectedControl.props, [key]: e.target.value }
+                          })}
+                        />
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ) : (
                 <div className={styles.codePanel}>
-                  <h3>{selectedControl.type} 源码</h3>
+                  <h3>💻 {selectedControl.type} 源码</h3>
                   <CodeEditor
                     value={code[selectedControl.type] || ''}
                     onChange={v => updateCode(selectedControl.type, v)}
@@ -225,7 +272,8 @@ export default function Playground() {
               )
             ) : (
               <div className={styles.hint}>
-                点击画布中的控件查看属性或编辑源码
+                👈 拖拽组件到画布<br/>
+                🎯 点击控件查看属性/源码
               </div>
             )}
           </div>
@@ -257,7 +305,11 @@ function DropArea({ children }: { children: React.ReactNode }) {
   const { setNodeRef, isOver } = useDroppable({ id: 'canvas' });
   
   return (
-    <div ref={setNodeRef} className={styles.canvas} style={{ background: isOver ? '#e6f7ff' : '#f5f5f5' }}>
+    <div 
+      ref={setNodeRef} 
+      className={styles.canvas} 
+      style={{ background: isOver ? '#e6f7ff' : '#f5f5f5' }}
+    >
       {children}
     </div>
   );

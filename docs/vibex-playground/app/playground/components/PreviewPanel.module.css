@@ -1,5 +1,4 @@
 .preview {
-  padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -7,29 +6,77 @@
 
 .empty {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%;
+  height: 400px;
   color: #999;
+  border: 2px dashed #ddd;
+  border-radius: 12px;
 }
 
-.control {
-  cursor: pointer;
-  border: 2px solid transparent;
+.emptyIcon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.controlWrapper {
+  background: #fff;
   border-radius: 8px;
+  border: 2px solid transparent;
+  overflow: hidden;
   transition: all 0.2s;
 }
 
-.control:hover {
+.controlWrapper:hover {
   border-color: #91d5ff;
 }
 
-.control.selected {
+.controlWrapper.selected {
   border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+.controlHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: #fafafa;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.controlType {
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+}
+
+.deleteBtn {
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: #ff4d4f;
+  color: #fff;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.controlWrapper:hover .deleteBtn {
+  opacity: 1;
+}
+
+.controlContent {
+  padding: 16px;
+  cursor: pointer;
 }
 
 .render {
-  padding: 16px;
+  min-height: 50px;
 }
 
 .code {
@@ -40,4 +87,5 @@
   font-size: 12px;
   overflow: auto;
   margin: 0;
+  max-height: 300px;
 }

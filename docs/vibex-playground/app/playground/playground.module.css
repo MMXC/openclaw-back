@@ -11,19 +11,59 @@
   overflow: hidden;
 }
 
+.sidebar {
+  width: 180px;
+  background: #fff;
+  border-right: 1px solid #e8e8e8;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.title {
+  font-size: 14px;
+  margin: 0 0 8px;
+  font-weight: 600;
+}
+
+.hint {
+  font-size: 12px;
+  color: #999;
+  margin: 0 0 16px;
+}
+
+.componentGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.draggable {
+  padding: 10px 12px;
+  background: #f5f5f5;
+  border-radius: 6px;
+  cursor: grab;
+  font-size: 13px;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+
+.draggable:hover {
+  background: #e6f7ff;
+  border-color: #1890ff;
+}
+
 .canvas {
   flex: 1;
   overflow: auto;
-.sidebar {
+  padding: 24px;
+}
+
+.rightPanel {
   width: 320px;
   background: #fff;
   border-left: 1px solid #e8e8e8;
   padding: 16px;
-}
-
-: #fff;
-  border-left: 1px solid #e8e8e8;
-  padding: 16px;
+  overflow-y: auto;
 }
 
 .propsPanel h3, .codePanel h3 {
@@ -31,22 +71,39 @@
   margin: 0 0 16px;
 }
 
+.propList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .prop {
-  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .prop label {
-  display: block;
   font-size: 12px;
   color: #666;
-  margin-bottom: 4px;
 }
 
 .prop input {
-  width: 100%;
-  padding: 8px;
+  padding: 8px 12px;
   border: 1px solid #d9d9d9;
-  border-radius: 4px;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.prop input:focus {
+  border-color: #1890ff;
+  outline: none;
+}
+
+.codePanel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .hint {
@@ -54,4 +111,5 @@
   font-size: 13px;
   text-align: center;
   padding: 40px 20px;
+  line-height: 1.8;
 }
