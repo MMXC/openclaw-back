@@ -78,6 +78,75 @@ const pageConfigsData: Record<string, {
       { type: 'InputBox', position: { x: 0, y: 564 }, size: { width: 1200, height: 100 } },
     ]
   },
+  flow: { 
+    name: '流程图编辑页', 
+    layout: 'full',
+    controls: [
+      { type: 'FlowToolbar', position: { x: 0, y: 0 }, size: { width: 1200, height: 48 } },
+      { type: 'FlowCanvas', position: { x: 0, y: 48 }, size: { width: 1000, height: 600 } },
+      { type: 'NodePanel', position: { x: 1000, y: 48 }, size: { width: 200, height: 600 } },
+    ]
+  },
+  pages: { 
+    name: '页面列表页', 
+    layout: 'full',
+    controls: [
+      { type: 'SearchBar', position: { x: 0, y: 0 }, size: { width: 1200, height: 60 } },
+      { type: 'PageGrid', position: { x: 0, y: 60 }, size: { width: 1200, height: 600 } },
+    ]
+  },
+  editor: { 
+    name: '页面编辑页', 
+    layout: 'full',
+    controls: [
+      { type: 'EditorToolbar', position: { x: 0, y: 0 }, size: { width: 1200, height: 48 } },
+      { type: 'ComponentPanel', position: { x: 0, y: 48 }, size: { width: 240, height: 600 } },
+      { type: 'PropertyPanel', position: { x: 960, y: 48 }, size: { width: 240, height: 600 } },
+    ]
+  },
+  preview: { 
+    name: '原型预览页', 
+    layout: 'full',
+    controls: [
+      { type: 'DeviceSwitcher', position: { x: 0, y: 0 }, size: { width: 1200, height: 48 } },
+      { type: 'DeviceFrame', position: { x: 350, y: 48 }, size: { width: 500, height: 700 } },
+    ]
+  },
+  export: { 
+    name: '导出页面', 
+    layout: 'full',
+    controls: [
+      { type: 'ExportOptions', position: { x: 0, y: 0 }, size: { width: 1200, height: 100 } },
+      { type: 'CodePreview', position: { x: 0, y: 100 }, size: { width: 1200, height: 500 } },
+      { type: 'DownloadButton', position: { x: 0, y: 600 }, size: { width: 1200, height: 80 } },
+    ]
+  },
+  'settings-project': { 
+    name: '项目设置页', 
+    layout: 'left-right',
+    controls: [
+      { type: 'SettingsNav', position: { x: 0, y: 0 }, size: { width: 200, height: 600 } },
+      { type: 'ProjectForm', position: { x: 200, y: 0 }, size: { width: 700, height: 400 } },
+      { type: 'TeamList', position: { x: 200, y: 400 }, size: { width: 700, height: 200 } },
+    ]
+  },
+  templates: { 
+    name: '模板市场页', 
+    layout: 'full',
+    controls: [
+      { type: 'CategoryFilter', position: { x: 0, y: 0 }, size: { width: 1200, height: 56 } },
+      { type: 'TemplateGrid', position: { x: 0, y: 56 }, size: { width: 1200, height: 600 } },
+    ]
+  },
+  'settings-user': { 
+    name: '用户设置页', 
+    layout: 'full',
+    controls: [
+      { type: 'UserProfile', position: { x: 0, y: 0 }, size: { width: 1200, height: 120 } },
+      { type: 'AvatarUpload', position: { x: 0, y: 120 }, size: { width: 1200, height: 180 } },
+      { type: 'PreferenceForm', position: { x: 0, y: 300 }, size: { width: 1200, height: 300 } },
+    ]
+  },
 };
 
 const componentMap: Record<string, React.FC<any>> = {
@@ -148,6 +217,126 @@ const componentMap: Record<string, React.FC<any>> = {
       </div>
     </div>
   ),
+  FlowToolbar: () => (
+    <div style={{ padding: 12, background: '#fff', borderBottom: '1px solid #e8e8e8', height: '100%', boxSizing: 'border-box', display: 'flex', gap: 8 }}>
+      <button style={{ padding: '8px 12px', border: '1px solid #d9d9d9', background: '#fff', borderRadius: 6 }}>选择</button>
+      <button style={{ padding: '8px 12px', border: '1px solid #d9d9d9', background: '#fff', borderRadius: 6 }}>连接</button>
+      <button style={{ padding: '8px 12px', border: '1px solid #d9d9d9', background: '#fff', borderRadius: 6 }}>删除</button>
+    </div>
+  ),
+  FlowCanvas: () => (
+    <div style={{ background: '#f5f5f5', height: '100%', boxSizing: 'border-box', position: 'relative' }}>
+      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', padding: 20, background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>流程节点</div>
+    </div>
+  ),
+  NodePanel: () => (
+    <div style={{ width: '100%', height: '100%', background: '#fff', borderLeft: '1px solid #e8e8e8', boxSizing: 'border-box', padding: 16 }}>
+      <h4 style={{ margin: '0 0 12px', fontSize: 14 }}>节点</h4>
+      {['开始', 'AI 对话', '条件判断', '结束'].map((n, i) => <div key={i} style={{ padding: 12, background: i === 0 ? '#e6f7ff' : i === 2 ? '#fff7e6' : '#f5f5f5', borderRadius: 6, marginBottom: 8, cursor: 'grab' }}>{n}</div>)}
+    </div>
+  ),
+  SearchBar: () => (
+    <div style={{ padding: '16px 24px', background: '#fff', borderBottom: '1px solid #e8e8e8', height: '100%', boxSizing: 'border-box' }}>
+      <input placeholder="搜索页面..." style={{ width: '100%', padding: '10px 16px', border: '1px solid #d9d9d9', borderRadius: 8 }} />
+    </div>
+  ),
+  PageGrid: () => (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 24, padding: 24, height: '100%', boxSizing: 'border-box', overflow: 'auto' }}>
+      {[1,2,3].map(i => <div key={i} style={{ aspectRatio: '16/9', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', borderRadius: 8 }}></div>)}
+    </div>
+  ),
+  EditorToolbar: () => (
+    <div style={{ padding: '8px 16px', background: '#fff', borderBottom: '1px solid #e8e8e8', height: '100%', boxSizing: 'border-box', display: 'flex', gap: 8 }}>
+      <button style={{ padding: '6px 12px', border: '1px solid #d9d9d9', background: '#fff', borderRadius: 4 }}>撤销</button>
+      <button style={{ padding: '6px 12px', border: '1px solid #d9d9d9', background: '#fff', borderRadius: 4 }}>重做</button>
+      <button style={{ padding: '6px 12px', border: 'none', background: '#1890ff', color: '#fff', borderRadius: 4 }}>保存</button>
+    </div>
+  ),
+  ComponentPanel: () => (
+    <div style={{ width: '100%', height: '100%', background: '#fff', borderRight: '1px solid #e8e8e8', boxSizing: 'border-box', padding: 16 }}>
+      <h4 style={{ margin: '0 0 16px', fontSize: 14 }}>组件</h4>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>{['文','图','布','按','输','卡'].map((c, i) => <div key={i} style={{ aspectRatio: '1', background: '#f5f5f5', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'grab' }}>{c}</div>)}</div>
+    </div>
+  ),
+  PropertyPanel: () => (
+    <div style={{ width: '100%', height: '100%', background: '#fff', borderLeft: '1px solid #e8e8e8', boxSizing: 'border-box', padding: 16 }}>
+      <h4 style={{ margin: '0 0 16px', fontSize: 14 }}>属性</h4>
+      {['宽度', '高度'].map((p, i) => <div key={i} style={{ marginBottom: 12 }}><label style={{ display: 'block', fontSize: 12, color: '#666', marginBottom: 4 }}>{p}</label><input defaultValue={p === '宽度' ? '100%' : 'auto'} style={{ width: '100%', padding: 6, border: '1px solid #d9d9d9', borderRadius: 4 }} /></div>)}
+    </div>
+  ),
+  DeviceSwitcher: () => (
+    <div style={{ padding: 12, background: '#fff', borderBottom: '1px solid #e8e8e8', height: '100%', boxSizing: 'border-box', display: 'flex', justifyContent: 'center', gap: 16 }}>
+      {['手机', '平板', '桌面'].map((d, i) => <button key={i} style={{ padding: '8px 16px', border: '1px solid #d9d9d9', background: i === 0 ? '#1890ff' : '#fff', color: i === 0 ? '#fff' : '#666', borderRadius: 6 }}>{d}</button>)}
+    </div>
+  ),
+  DeviceFrame: ({ children }: any) => (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', background: '#f5f5f5', boxSizing: 'border-box' }}>
+      <div style={{ width: 375, height: 667, background: '#fff', borderRadius: 40, border: '12px solid #333', overflow: 'hidden' }}>
+        <div style={{ height: 30, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ width: 80, height: 6, background: '#ddd', borderRadius: 3 }}></div></div>
+        <div style={{ height: 'calc(100% - 30px)', overflow: 'auto' }}>{children}</div>
+      </div>
+    </div>
+  ),
+  ExportOptions: () => (
+    <div style={{ padding: 24, background: '#fff', height: '100%', boxSizing: 'border-box' }}>
+      <h3 style={{ margin: '0 0 16px' }}>导出格式</h3>
+      {['React', 'Vue', 'HTML'].map((f, i) => <label key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, cursor: 'pointer' }}><input type="radio" name="format" defaultChecked={i === 0} /> {f}</label>)}
+    </div>
+  ),
+  CodePreview: () => (
+    <div style={{ flex: 1, background: '#1e1e1e', color: '#d4d4d4', padding: 16, fontSize: 13, fontFamily: 'monospace', overflow: 'auto', boxSizing: 'border-box' }}>
+      <pre style={{ margin: 0 }}>{`import React from 'react';\n\nexport const Page = () => {\n  return <h1>Hello</h1>;\n};`}</pre>
+    </div>
+  ),
+  DownloadButton: () => (
+    <div style={{ padding: 24, background: '#fff', borderTop: '1px solid #e8e8e8', height: '100%', boxSizing: 'border-box', display: 'flex', alignItems: 'center' }}>
+      <button style={{ width: '100%', padding: 14, background: '#52c41a', color: '#fff', border: 'none', borderRadius: 8, fontSize: 16 }}>下载代码</button>
+    </div>
+  ),
+  SettingsNav: () => (
+    <nav style={{ width: '100%', height: '100%', background: '#fff', borderRight: '1px solid #e8e8e8', boxSizing: 'border-box', padding: '16px 0' }}>
+      {['基本信息', '团队成员', '域名设置', '付费记录'].map((item, i) => <div key={i} style={{ padding: '12px 24px', color: i === 0 ? '#1890ff' : '#666', background: i === 0 ? '#e6f7ff' : 'transparent' }}>{item}</div>)}
+    </nav>
+  ),
+  ProjectForm: () => (
+    <div style={{ flex: 1, padding: 24, background: '#fff', height: '100%', boxSizing: 'border-box' }}>
+      {['项目名称', '项目描述'].map((label, i) => <div key={i} style={{ marginBottom: 20 }}><label style={{ display: 'block', marginBottom: 8, fontWeight: 500 }}>{label}</label><input defaultValue={i === 0 ? '我的项目' : '这是一个 AI 原型项目'} style={{ width: '100%', maxWidth: 400, padding: 10, border: '1px solid #d9d9d9', borderRadius: 8 }} /></div>)}
+    </div>
+  ),
+  TeamList: () => (
+    <div style={{ padding: 24, background: '#fff', height: '100%', boxSizing: 'border-box' }}>
+      <h3 style={{ margin: '0 0 16px' }}>团队成员</h3>
+      {['张三', '李四', '王五'].map((name, i) => <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 0', borderBottom: '1px solid #f0f0f0' }}><div style={{ width: 40, height: 40, background: '#ddd', borderRadius: '50%' }}></div><div><div style={{ fontWeight: 500 }}>{name}</div><div style={{ fontSize: 12, color: '#999' }}>owner</div></div></div>)}
+    </div>
+  ),
+  CategoryFilter: () => (
+    <div style={{ padding: '16px 24px', background: '#fff', borderBottom: '1px solid #e8e8e8', height: '100%', boxSizing: 'border-box', display: 'flex', gap: 12 }}>
+      {['全部', '登录', '仪表盘', '电商', '社交'].map((c, i) => <button key={i} style={{ padding: '6px 16px', border: '1px solid #d9d9d9', background: i === 0 ? '#1890ff' : '#fff', color: i === 0 ? '#fff' : '#666', borderRadius: 16 }}>{c}</button>)}
+    </div>
+  ),
+  TemplateGrid: () => (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 24, padding: 24, height: '100%', boxSizing: 'border-box', overflow: 'auto' }}>
+      {[1,2,3,4,5,6].map(i => <div key={i} style={{ background: '#fff', borderRadius: 12, overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}><div style={{ aspectRatio: '16/9', background: `hsl(${(i * 60) % 360}, 60%, 70%)` }}></div><div style={{ padding: 16 }}><h3 style={{ margin: '0 0 8px' }}>模板 {i}</h3><p style={{ margin: 0, color: '#666', fontSize: 14 }}>模板描述</p></div></div>)}
+    </div>
+  ),
+  UserProfile: () => (
+    <div style={{ padding: 24, background: '#fff', height: '100%', boxSizing: 'border-box', display: 'flex', alignItems: 'center', gap: 24 }}>
+      <div style={{ width: 80, height: 80, background: '#ddd', borderRadius: '50%' }}></div>
+      <div><h2 style={{ margin: '0 0 8px' }}>用户</h2><p style={{ margin: 0, color: '#666' }}>user@example.com</p></div>
+    </div>
+  ),
+  AvatarUpload: () => (
+    <div style={{ padding: 24, background: '#fff', height: '100%', boxSizing: 'border-box' }}>
+      <div style={{ width: 120, height: 120, background: '#f0f0f0', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>点击上传</div>
+      <button style={{ padding: '10px 24px', border: '1px solid #d9d9d9', background: '#fff', borderRadius: 8 }}>选择图片</button>
+    </div>
+  ),
+  PreferenceForm: () => (
+    <div style={{ padding: 24, background: '#fff', height: '100%', boxSizing: 'border-box' }}>
+      <h3 style={{ margin: '0 0 16px' }}>偏好设置</h3>
+      {['接收邮件通知', '公开个人资料'].map((label, i) => <div key={i} style={{ marginBottom: 16 }}><label style={{ display: 'flex', alignItems: 'center', gap: 8 }}><input type="checkbox" defaultChecked /> {label}</label></div>)}
+    </div>
+  ),
 };
 
 const customControls: Record<string, string[]> = {
@@ -155,6 +344,14 @@ const customControls: Record<string, string[]> = {
   auth: ['AuthCard'],
   dashboard: ['DashboardHeader', 'Sidebar', 'ProjectCard', 'StatsCard'],
   chat: ['ChatHeader', 'MessageList', 'InputBox'],
+  flow: ['FlowToolbar', 'FlowCanvas', 'NodePanel'],
+  pages: ['SearchBar', 'PageGrid'],
+  editor: ['EditorToolbar', 'ComponentPanel', 'PropertyPanel'],
+  preview: ['DeviceSwitcher', 'DeviceFrame'],
+  export: ['ExportOptions', 'CodePreview', 'DownloadButton'],
+  'settings-project': ['SettingsNav', 'ProjectForm', 'TeamList'],
+  templates: ['CategoryFilter', 'TemplateGrid'],
+  'settings-user': ['UserProfile', 'AvatarUpload', 'PreferenceForm'],
 };
 
 const moreControls = ['Button', 'Input', 'Card', 'Modal', 'Dropdown', 'Tabs', 'Table', 'Avatar', 'Badge', 'Toast'];
