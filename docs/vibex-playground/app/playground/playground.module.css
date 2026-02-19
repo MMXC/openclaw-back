@@ -3,9 +3,9 @@
   flex-direction: column;
   height: 100vh;
   background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+  position: relative;
 }
 
-/* 动态渐变背景 */
 .playground::before {
   content: '';
   position: fixed;
@@ -135,7 +135,6 @@
 .navAction:hover {
   background: linear-gradient(90deg, rgba(102,126,234,0.1) 0%, transparent 100%);
   transform: translateX(4px);
-  background: #f5f5f5;
 }
 
 .activeAction {
@@ -253,13 +252,11 @@
   margin: 0 0 16px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   -webkit-background-clip: text;
-
-@keyframes gradientShift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  background-size: 200% 200%;
-  animation: gradientShift 3s ease infinite;
+  -webkit-text-fill-color: transparent;
   background-clip: text;
+  animation: gradientShift 3s ease infinite;
+  background-size: 200% 200%;
+}
 
 @keyframes gradientShift {
   0%, 100% { background-position: 0% 50%; }
@@ -430,41 +427,4 @@
 
 .aiButton:hover {
   transform: scale(1.1);
-}
-
-/* 闪光按钮效果 */
-@keyframes shimmer {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
-}
-
-.shimmerBtn {
-  background: linear-gradient(
-    90deg,
-    rgba(255,255,255,0) 0%,
-    rgba(255,255,255,0.3) 50%,
-    rgba(255,255,255,0) 100%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 2s infinite;
-}
-
-/* 脉冲动画 */
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.02); }
-}
-
-.pulse {
-  animation: pulse 2s ease-in-out infinite;
-}
-
-/* 浮动动画 */
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
-
-.float {
-  animation: float 3s ease-in-out infinite;
 }
