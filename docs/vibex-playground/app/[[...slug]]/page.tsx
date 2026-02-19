@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getAllPages, getAllComponents, getPageBySlug, getComponentBySlug } from '../../lib/config';
+import Home from './Home';
 import styles from './home.module.css';
 
 export async function generateStaticParams() {
@@ -31,7 +32,7 @@ export default async function Page({ params }: { params: { slug?: string[] } }) 
   
   // 首页
   if (!slug) {
-    return <HomePage />;
+    return <Home />;
   }
   
   // 页面
