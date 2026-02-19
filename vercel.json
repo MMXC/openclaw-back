@@ -1,0 +1,6 @@
+{
+  "buildCommand": "cd docs/vibex-playground && npm install && npm run build",
+  "outputDirectory": "docs/vibex-playground/.next",
+  "installCommand": "cd docs/vibex-playground && npm install",
+  "framework": "nextjs"
+}
