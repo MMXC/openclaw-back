@@ -3,7 +3,6 @@
 import { useState, useEffect, Suspense, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { DndContext, DragEndEvent, useDraggable, useDroppable } from '@dnd-kit/core';
-import { CodeEditor } from './components/CodeEditor';
 import { Toolbar } from './components/Toolbar';
 import { AIChat } from './components/AIChat';
 import styles from './playground.module.css';
@@ -33,7 +32,8 @@ interface PageState {
   controls: Control[];
 }
 
-// 页面配置
+type TabView = 'home' | 'page';
+
 const pageConfigsData: Record<string, { 
   name: string; 
   layout: 'full' | 'left-right' | 'top-bottom' | 'three-col';
@@ -80,7 +80,6 @@ const pageConfigsData: Record<string, {
   },
 };
 
-// 控件组件
 const componentMap: Record<string, React.FC<any>> = {
   Header: () => (
     <header style={{ padding: '16px 24px', background: '#fff', borderBottom: '1px solid #e8e8e8', display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '100%', boxSizing: 'border-box' }}>
@@ -151,7 +150,6 @@ const componentMap: Record<string, React.FC<any>> = {
   ),
 };
 
-// 自定义组件（当前页面）
 const customControls: Record<string, string[]> = {
   landing: ['Header', 'Hero', 'FeatureCard', 'Footer'],
   auth: ['AuthCard'],
@@ -159,23 +157,46 @@ const customControls: Record<string, string[]> = {
   chat: ['ChatHeader', 'MessageList', 'InputBox'],
 };
 
-// 更多组件
 const moreControls = ['Button', 'Input', 'Card', 'Modal', 'Dropdown', 'Tabs', 'Table', 'Avatar', 'Badge', 'Toast'];
+
+const menuItems = [
+  { id: 'landing', name: '落地页' },
+  { id: 'auth', name: '登录注册页' },
+  { id: 'dashboard', name: '用户中心' },
+  { id: 'chat', name: 'AI对话页' },
+  { id: 'flow', name: '流程图编辑页' },
+  { id: 'pages', name: '页面列表页' },
+  { id: 'editor', name: '页面编辑页' },
+  { id: 'preview', name: '原型预览页' },
+  { id: 'export', name: '导出页面' },
+  { id: 'settings-project', name: '项目设置页' },
+  { id: 'templates', name: '模板市场页' },
+  { id: 'settings-user', name: '用户设置页' },
+];
+
+const GRID_SIZE = 20;
+
+function snapToGrid(value: number): number {
+  return Math.round(value / GRID_SIZE) * GRID_SIZE;
+}
 
 function PlaygroundContent() {
   const searchParams = useSearchParams();
-  const pageSlug = searchParams.get('page') || 'landing';
-  const config = pageConfigsData[pageSlug] || pageConfigsData.landing;
+  const initialPage = searchParams.get('page') || 'landing';
   
+  const [activeTab, setActiveTab] = useState<TabView>('home');
+  const [currentPageId, setCurrentPageId] = useState(initialPage);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [showGrid, setShowGrid] = useState(false);
+  const [showMore, setShowMore] = useState(false);
+  
+  const config = pageConfigsData[currentPageId] || pageConfigsData.landing;
   const [page, setPage] = useState<PageState>({ id: '', name: config.name, controls: [] });
   const [selectedControl, setSelectedControl] = useState<Control | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [aiChatOpen, setAiChatOpen] = useState(false);
-  const [showMore, setShowMore] = useState(false);
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const canvasRef = useRef<HTMLDivElement>(null);
 
-  // 初始化控件
   useEffect(() => {
     const controls: Control[] = config.controls.map((c, i) => ({
       id: `${c.type}_${i}`,
@@ -185,11 +206,10 @@ function PlaygroundContent() {
       size: c.size,
       code: '',
     }));
-    setPage({ id: pageSlug, name: config.name, controls });
+    setPage({ id: currentPageId, name: config.name, controls });
     setSelectedControl(null);
-  }, [pageSlug, config]);
+  }, [currentPageId, config]);
 
-  // 拖拽放置
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over, delta } = event;
     setActiveId(null);
@@ -197,9 +217,8 @@ function PlaygroundContent() {
     if (over && over.id === 'canvas') {
       const compType = String(active.id);
       if (componentMap[compType]) {
-        // 计算放置位置（使用 delta 相对移动）
-        const x = 100 + delta.x;
-        const y = 100 + delta.y;
+        const x = showGrid ? snapToGrid(100 + delta.x) : 100 + delta.x;
+        const y = showGrid ? snapToGrid(100 + delta.y) : 100 + delta.y;
         
         const newControl: Control = {
           id: `${compType}_${Date.now()}`,
@@ -215,41 +234,42 @@ function PlaygroundContent() {
     }
   };
 
-  // 移动控件
   const moveControl = (id: string, delta: { x: number; y: number }) => {
     setPage(p => ({
       ...p,
       controls: p.controls.map(c => c.id === id ? {
         ...c,
-        position: { x: Math.max(0, c.position.x + delta.x), y: Math.max(0, c.position.y + delta.y) }
+        position: { 
+          x: Math.max(0, showGrid ? snapToGrid(c.position.x + delta.x) : c.position.x + delta.x), 
+          y: Math.max(0, showGrid ? snapToGrid(c.position.y + delta.y) : c.position.y + delta.y) 
+        }
       } : c)
     }));
   };
 
-  // 调整大小
   const resizeControl = (id: string, delta: { width: number; height: number }) => {
     setPage(p => ({
       ...p,
       controls: p.controls.map(c => c.id === id ? {
         ...c,
-        size: { width: Math.max(50, c.size.width + delta.width), height: Math.max(30, c.size.height + delta.height) }
+        size: { 
+          width: Math.max(50, showGrid ? snapToGrid(c.size.width + delta.width) : c.size.width + delta.width), 
+          height: Math.max(30, showGrid ? snapToGrid(c.size.height + delta.height) : c.size.height + delta.height) 
+        }
       } : c)
     }));
   };
 
-  // 更新属性
   const updateControl = (id: string, updates: Partial<Control>) => {
     setPage(p => ({ ...p, controls: p.controls.map(c => c.id === id ? { ...c, ...updates } : c) }));
     if (selectedControl?.id === id) setSelectedControl(s => s ? { ...s, ...updates } : null);
   };
 
-  // 删除
   const deleteControl = (id: string) => {
     setPage(p => ({ ...p, controls: p.controls.filter(c => c.id !== id) }));
     if (selectedControl?.id === id) setSelectedControl(null);
   };
 
-  // 导出
   const exportConfig = () => {
     const blob = new Blob([JSON.stringify({ page }, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
@@ -258,15 +278,19 @@ function PlaygroundContent() {
     a.click();
   };
 
-  // 渲染控件
   const renderControl = (control: Control) => {
     const Component = componentMap[control.type];
     if (!Component) return <div>Unknown</div>;
     return <Component />;
   };
 
-  // 获取当前页面的自定义组件
-  const currentCustomControls = customControls[pageSlug] || [];
+  const currentCustomControls = customControls[currentPageId] || [];
+
+  const handleCanvasClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget || (e.target as HTMLElement).className.includes('canvas')) {
+      setSelectedControl(null);
+    }
+  };
 
   return (
     <DndContext onDragStart={(e) => setActiveId(String(e.active.id))} onDragEnd={handleDragEnd}>
@@ -276,106 +300,159 @@ function PlaygroundContent() {
         <button className={styles.aiButton} onClick={() => setAiChatOpen(true)}>🤖 AI</button>
 
         <div className={styles.main}>
-          {/* 左侧组件面板 */}
-          <div className={styles.sidebar}>
-            <h3 className={styles.title}>🧩 组件</h3>
+          {/* 左侧菜单 */}
+          <div className={`${styles.sidebar} ${sidebarCollapsed ? styles.collapsed : ''}`}>
+            <div className={styles.sidebarHeader}>
+              <span className={styles.sidebarTitle}>📁 页面菜单</span>
+              <button className={styles.collapseBtn} onClick={() => setSidebarCollapsed(!sidebarCollapsed)}>
+                {sidebarCollapsed ? '▶' : '◀'}
+              </button>
+            </div>
             
-            {/* 自定义组件 */}
-            <div className={styles.componentSection}>
-              <div className={styles.sectionTitle}>当前页面</div>
-              <div className={styles.componentList}>
-                {currentCustomControls.map(type => (
-                  <DraggableItem key={type} type={type} name={type} />
+            {!sidebarCollapsed && (
+              <nav className={styles.nav}>
+                {menuItems.map(item => (
+                  <div key={item.id} className={styles.navItem}>
+                    <div 
+                      className={`${styles.navHeader} ${currentPageId === item.id && activeTab === 'page' ? styles.active : ''}`}
+                      onClick={() => { setCurrentPageId(item.id); setActiveTab('page'); }}
+                    >
+                      <span className={styles.pageId}>{item.id.padStart(2, '0')}</span>
+                      <span className={styles.pageName}>{item.name}</span>
+                    </div>
+                    
+                    {currentPageId === item.id && activeTab === 'page' && (
+                      <div className={styles.navActions}>
+                        <div className={styles.navAction}>📄 说明</div>
+                        <div className={`${styles.navAction} ${styles.activeAction}`}>🎨 {item.name}原型</div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </nav>
+            )}
+          </div>
+
+          {/* Tab 栏 */}
+          {activeTab === 'page' && (
+            <div className={styles.tabBar}>
+              <div className={styles.tab}>
+                <span>🏠 首页</span>
+                <button onClick={() => setActiveTab('home')}>×</button>
+              </div>
+              <div className={`${styles.tab} ${styles.activeTab}`}>
+                <span>🎨 {config.name}原型</span>
+                <button onClick={() => setActiveTab('home')}>×</button>
+              </div>
+              <div className={styles.gridToggle}>
+                <label>
+                  <input type="checkbox" checked={showGrid} onChange={e => setShowGrid(e.target.checked)} />
+                  显示网格
+                </label>
+              </div>
+            </div>
+          )}
+
+          {/* 画布区域 */}
+          {activeTab === 'page' ? (
+            <div className={styles.canvasWrapper}>
+              <div 
+                ref={canvasRef} 
+                className={styles.canvas}
+                onClick={handleCanvasClick}
+              >
+                {showGrid && (
+                  <div 
+                    className={styles.gridOverlay}
+                    style={{ 
+                      backgroundImage: `linear-gradient(to right, #e0e0e0 1px, transparent 1px), linear-gradient(to bottom, #e0e0e0 1px, transparent 1px)`,
+                      backgroundSize: `${GRID_SIZE}px ${GRID_SIZE}px`
+                    }}
+                  />
+                )}
+                {page.controls.map(control => (
+                  <DraggableControl
+                    key={control.id}
+                    control={control}
+                    isSelected={selectedControl?.id === control.id}
+                    onSelect={() => setSelectedControl(control)}
+                    onMove={(delta) => moveControl(control.id, delta)}
+                    onResize={(delta) => resizeControl(control.id, delta)}
+                    onDelete={() => deleteControl(control.id)}
+                  >
+                    {renderControl(control)}
+                  </DraggableControl>
                 ))}
               </div>
             </div>
-
-            {/* 更多组件 */}
-            <div className={styles.componentSection}>
-              <div className={styles.sectionTitle} onClick={() => setShowMore(!showMore)} style={{ cursor: 'pointer' }}>
-                更多 {showMore ? '▼' : '▶'}
+          ) : (
+            <div className={styles.homeContent}>
+              <h1>🎯 VibeX Playground</h1>
+              <p>选择左侧页面，点击"XX原型"开始编辑</p>
+              <div className={styles.features}>
+                <div className={styles.feature}><span>🧩</span><span>组件库拖拽</span></div>
+                <div className={styles.feature}><span>✏️</span><span>可视化属性</span></div>
+                <div className={styles.feature}><span>📐</span><span>网格吸附</span></div>
+                <div className={styles.feature}><span>🤖</span><span>AI 智能调整</span></div>
               </div>
-              {showMore && (
-                <div className={styles.componentList}>
-                  {moreControls.map(type => (
-                    <DraggableItem key={type} type={type} name={type} />
-                  ))}
+            </div>
+          )}
+
+          {/* 右侧属性面板 */}
+          {activeTab === 'page' && (
+            <div className={styles.rightPanel}>
+              {selectedControl ? (
+                <div className={styles.propsPanel}>
+                  <h3>✏️ {selectedControl.type}</h3>
+                  
+                  <div className={styles.propGroup}>
+                    <label>位置</label>
+                    <div className={styles.propRow}>
+                      <span>X</span>
+                      <input 
+                        type="number" 
+                        value={selectedControl.position.x} 
+                        onChange={e => updateControl(selectedControl.id, { position: { ...selectedControl.position, x: Number(e.target.value) } })}
+                      />
+                      <span>Y</span>
+                      <input 
+                        type="number" 
+                        value={selectedControl.position.y} 
+                        onChange={e => updateControl(selectedControl.id, { position: { ...selectedControl.position, y: Number(e.target.value) } })}
+                      />
+                    </div>
+                  </div>
+
+                  <div className={styles.propGroup}>
+                    <label>尺寸</label>
+                    <div className={styles.propRow}>
+                      <span>W</span>
+                      <input 
+                        type="number" 
+                        value={selectedControl.size.width} 
+                        onChange={e => updateControl(selectedControl.id, { size: { ...selectedControl.size, width: Number(e.target.value) } })}
+                      />
+                      <span>H</span>
+                      <input 
+                        type="number" 
+                        value={selectedControl.size.height} 
+                        onChange={e => updateControl(selectedControl.id, { size: { ...selectedControl.size, height: Number(e.target.value) } })}
+                      />
+                    </div>
+                  </div>
+
+                  <button className={styles.deleteBtn} onClick={() => deleteControl(selectedControl.id)}>🗑️ 删除控件</button>
+                </div>
+              ) : (
+                <div className={styles.hint}>
+                  👈 拖拽组件到画布<br/>
+                  🎯 点击控件查看/编辑<br/>
+                  ↘️ 拖拽右下角调整大小<br/>
+                  ☐ 显示网格吸附
                 </div>
               )}
             </div>
-          </div>
-
-          {/* 中间画布 */}
-          <div className={styles.canvasWrapper}>
-            <div ref={canvasRef} className={styles.canvas}>
-              {page.controls.map(control => (
-                <DraggableControl
-                  key={control.id}
-                  control={control}
-                  isSelected={selectedControl?.id === control.id}
-                  onSelect={() => setSelectedControl(control)}
-                  onMove={(delta) => moveControl(control.id, delta)}
-                  onResize={(delta) => resizeControl(control.id, delta)}
-                  onDelete={() => deleteControl(control.id)}
-                >
-                  {renderControl(control)}
-                </DraggableControl>
-              ))}
-            </div>
-          </div>
-
-          {/* 右侧属性面板 */}
-          <div className={styles.rightPanel}>
-            {selectedControl ? (
-              <div className={styles.propsPanel}>
-                <h3>✏️ {selectedControl.type}</h3>
-                
-                <div className={styles.propGroup}>
-                  <label>位置</label>
-                  <div className={styles.propRow}>
-                    <span>X</span>
-                    <input 
-                      type="number" 
-                      value={selectedControl.position.x} 
-                      onChange={e => updateControl(selectedControl.id, { position: { ...selectedControl.position, x: Number(e.target.value) } })}
-                    />
-                    <span>Y</span>
-                    <input 
-                      type="number" 
-                      value={selectedControl.position.y} 
-                      onChange={e => updateControl(selectedControl.id, { position: { ...selectedControl.position, y: Number(e.target.value) } })}
-                    />
-                  </div>
-                </div>
-
-                <div className={styles.propGroup}>
-                  <label>尺寸</label>
-                  <div className={styles.propRow}>
-                    <span>W</span>
-                    <input 
-                      type="number" 
-                      value={selectedControl.size.width} 
-                      onChange={e => updateControl(selectedControl.id, { size: { ...selectedControl.size, width: Number(e.target.value) } })}
-                    />
-                    <span>H</span>
-                    <input 
-                      type="number" 
-                      value={selectedControl.size.height} 
-                      onChange={e => updateControl(selectedControl.id, { size: { ...selectedControl.size, height: Number(e.target.value) } })}
-                    />
-                  </div>
-                </div>
-
-                <button className={styles.deleteBtn} onClick={() => deleteControl(selectedControl.id)}>🗑️ 删除控件</button>
-              </div>
-            ) : (
-              <div className={styles.hint}>
-                👈 拖拽组件到画布<br/>
-                🎯 点击控件查看/编辑<br/>
-                ↘️ 拖拽右下角调整大小
-              </div>
-            )}
-          </div>
+          )}
         </div>
       </div>
 
@@ -390,13 +467,11 @@ function PlaygroundContent() {
   );
 }
 
-// 可拖拽的组件项
 function DraggableItem({ type, name }: { type: string; name: string }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: type });
   return <div ref={setNodeRef} {...listeners} {...attributes} className={styles.draggable} style={{ opacity: isDragging ? 0.5 : 1 }}>{name}</div>;
 }
 
-// 可拖拽/调整大小的控件
 function DraggableControl({ 
   children, 
   control, 
@@ -476,7 +551,7 @@ function DraggableControl({
       {isSelected && (
         <>
           <div className={styles.controlLabel}>{control.type}</div>
-          <div className={`${styles.resizeHandle}`} onMouseDown={handleMouseDown}></div>
+          <div className={styles.resizeHandle} onMouseDown={handleMouseDown}></div>
         </>
       )}
     </div>
