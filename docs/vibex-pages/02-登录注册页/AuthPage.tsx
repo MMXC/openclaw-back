@@ -1,289 +1,266 @@
 /**
- * 登录注册页 - 科技感玻璃拟态设计
+ * 登录注册页 - 未来科幻AI风格
  * 
- * 设计灵感:
- * 1. 玻璃卡片 - 源自 Apple Vision Pro 沉浸式 UI
- * 2. 霓虹光效 - VS Code 霓虹主题 + 赛博朋克
- * 3. 背景粒子 - 星空/数据流意象
- * 4. 交互动效 - iOS 动态岛屿平滑过渡
+ * 设计亮点:
+ * 1. 粒子连线背景 - 神经网络可视化
+ * 2. 全息玻璃卡片 - 3D透视效果
+ * 3. 能量输入框 - 脉冲边框动画
+ * 4. 激光按钮 - 发光悬停效果
+ * 5. 扫描验证 - 模拟AI安全验证
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
-// 背景粒子组件
-const ParticleBackground = () => {
-  const [particles, setParticles] = useState([]);
+// 粒子连线背景
+const ParticleNetwork = () => {
+  const canvasRef = useRef(null);
 
   useEffect(() => {
-    const newParticles = Array.from({ length: 50 }, (_, i) => ({
-      id: i,
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      size: Math.random() * 3 + 1,
-      duration: Math.random() * 20 + 15,
-      delay: Math.random() * 5,
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+
+    const particles = Array.from({ length: 60 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.5,
+      vy: (Math.random() - 0.5) * 0.5,
     }));
-    setParticles(newParticles);
+
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach((p, i) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(0, 255, 255, 0.6)';
+        ctx.fill();
+
+        particles.slice(i + 1).forEach(p2 => {
+          const dx = p.x - p2.x;
+          const dy = p.y - p2.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 120) {
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.strokeStyle = `rgba(0, 255, 255, ${0.15 * (1 - dist / 120)})`;
+            ctx.stroke();
+          }
+        });
+      });
+      requestAnimationFrame(draw);
+    };
+    draw();
   }, []);
 
   return (
-    <div style={{
+    <canvas ref={canvasRef} style={{
       position: 'absolute',
       inset: 0,
-      overflow: 'hidden',
-      background: 'linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0f0f1a 100%)',
-    }}>
-      {/* 渐变光晕 */}
-      <div style={{
-        position: 'absolute',
-        top: '-50%',
-        left: '-50%',
-        width: '200%',
-        height: '200%',
-        background: 'radial-gradient(circle at 30% 30%, rgba(99, 102, 241, 0.15) 0%, transparent 50%), radial-gradient(circle at 70% 70%, rgba(139, 92, 246, 0.1) 0%, transparent 50%)',
-        animation: 'pulse 8s ease-in-out infinite',
-      }} />
-
-      {/* 粒子 */}
-      {particles.map(p => (
-        <div
-          key={p.id}
-          style={{
-            position: 'absolute',
-            left: `${p.x}%`,
-            top: `${p.y}%`,
-            width: p.size,
-            height: p.size,
-            borderRadius: '50%',
-            background: `rgba(139, 92, 246, ${Math.random() * 0.5 + 0.2})`,
-            boxShadow: `0 0 ${p.size * 2}px rgba(139, 92, 246, 0.5)`,
-            animation: `float ${p.duration}s ease-in-out ${p.delay}s infinite`,
-          }}
-        />
-      ))}
-
-      <style>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
-          25% { transform: translateY(-20px) translateX(10px); opacity: 0.8; }
-          50% { transform: translateY(-10px) translateX(-10px); opacity: 0.5; }
-          75% { transform: translateY(-30px) translateX(5px); opacity: 0.9; }
-        }
-        @keyframes pulse {
-          0%, 100% { opacity: 0.5; transform: scale(1); }
-          50% { opacity: 0.8; transform: scale(1.1); }
-        }
-      `}</style>
-    </div>
+      width: '100%',
+      height: '100%',
+    }} />
   );
 };
 
-// 霓虹输入框
-const NeonInput = ({ 
-  label, 
-  type = 'text', 
-  placeholder, 
-  icon,
-  value,
-  onChange 
-}) => {
+// 全息卡片
+const HolographicCard = ({ children }) => (
+  <div style={{
+    position: 'relative',
+    padding: 48,
+    background: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: 24,
+    backdropFilter: 'blur(20px)',
+    border: '1px solid rgba(0, 255, 255, 0.2)',
+    boxShadow: `
+      0 0 60px rgba(0, 255, 255, 0.1),
+      inset 0 0 60px rgba(0, 255, 255, 0.02)
+    `,
+    overflow: 'hidden',
+  }}>
+    <div style={{
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      height: 1,
+      background: 'linear-gradient(90deg, transparent, #00ffff, transparent)',
+      animation: 'scan 3s linear infinite',
+    }} />
+    <style>{`@keyframes scan { 0% { transform: translateY(0); } 100% { transform: translateY(400px); } }`}</style>
+    {children}
+  </div>
+);
+
+// 能量输入框
+const EnergyInput = ({ label, type = 'text', placeholder }) => {
   const [focused, setFocused] = useState(false);
+  const [value, setValue] = useState('');
 
   return (
-    <div style={{ marginBottom: 20 }}>
+    <div style={{ marginBottom: 24 }}>
       <label style={{
         display: 'block',
-        marginBottom: 8,
         fontSize: 13,
-        fontWeight: 500,
-        color: focused ? '#a5b4fc' : '#9ca3af',
-        transition: 'color 0.3s',
-        letterSpacing: '0.5px',
+        color: 'rgba(255, 255, 255, 0.6)',
+        marginBottom: 8,
+        textTransform: 'uppercase',
+        letterSpacing: '1px',
+      }}>{label}</label>
+      <div style={{
+        position: 'relative',
+        overflow: 'hidden',
+        borderRadius: 12,
       }}>
-        {label}
-      </label>
-      <div style={{ position: 'relative' }}>
-        {/* 霓虹左边条 */}
-        <div style={{
-          position: 'absolute',
-          left: 0,
-          top: 0,
-          bottom: 0,
-          width: 3,
-          borderRadius: '0 2px 2px 0',
-          background: focused 
-            ? 'linear-gradient(180deg, #818cf8 0%, #c084fc 100%)' 
-            : '#374151',
-          boxShadow: focused 
-            ? '0 0 12px rgba(129, 140, 248, 0.6), 0 0 4px rgba(129, 140, 248, 0.8)' 
-            : 'none',
-          transition: 'all 0.3s ease',
-        }} />
-        
         <input
           type={type}
           value={value}
-          onChange={onChange}
-          placeholder={placeholder}
+          onChange={e => setValue(e.target.value)}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
+          placeholder={placeholder}
           style={{
             width: '100%',
-            padding: '14px 16px 14px 20px',
-            background: 'rgba(255, 255, 255, 0.03)',
-            border: '1px solid',
-            borderColor: focused ? 'rgba(129, 140, 248, 0.5)' : 'rgba(55, 65, 81, 0.5)',
+            padding: '16px 20px',
+            background: 'rgba(0, 0, 0, 0.4)',
+            border: '2px solid',
+            borderColor: focused ? '#00ffff' : 'rgba(0, 255, 255, 0.2)',
             borderRadius: 12,
+            color: '#fff',
             fontSize: 15,
-            color: '#f9fafb',
             outline: 'none',
-            transition: 'all 0.3s ease',
-            backdropFilter: 'blur(10px)',
+            transition: 'all 0.3s',
+            boxShadow: focused ? '0 0 20px rgba(0, 255, 255, 0.3), inset 0 0 20px rgba(0, 255, 255, 0.05)' : 'none',
           }}
         />
-        
-        {/* 聚焦时的光晕 */}
         {focused && (
           <div style={{
             position: 'absolute',
-            inset: -1,
-            borderRadius: 13,
-            background: 'linear-gradient(135deg, rgba(129, 140, 248, 0.1), rgba(192, 132, 252, 0.1))',
+            inset: -2,
+            borderRadius: 14,
+            background: 'linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.3), transparent)',
+            animation: 'energy 1.5s ease-in-out infinite',
             zIndex: -1,
-            filter: 'blur(8px)',
-            animation: 'glow 2s ease-in-out infinite',
           }} />
         )}
+        <style>{`
+          @keyframes energy {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+          }
+        `}</style>
       </div>
-
-      <style>{`
-        @keyframes glow {
-          0%, 100% { opacity: 0.5; }
-          50% { opacity: 0.8; }
-        }
-      `}</style>
     </div>
   );
 };
 
-// 流光按钮
-const GlowingButton = ({ children, onClick, variant = 'primary' }) => {
-  const [hovered, setHovered] = useState(false);
-
-  return (
-    <button
-      onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        width: '100%',
-        padding: '16px',
-        border: 'none',
-        borderRadius: 14,
-        fontSize: 16,
-        fontWeight: 600,
-        cursor: 'pointer',
-        position: 'relative',
-        overflow: 'hidden',
-        background: variant === 'primary'
-          ? 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)'
-          : 'transparent',
-        color: variant === 'primary' ? '#fff' : '#a5b4fc',
-        border: variant === 'primary' ? 'none' : '1px solid rgba(129, 140, 248, 0.3)',
-        transition: 'all 0.3s ease',
-        letterSpacing: '0.5px',
-      }}
-    >
-      {/* 流光效果 */}
+// 激光按钮
+const LaserButton = ({ children, primary }) => (
+  <button style={{
+    width: '100%',
+    padding: '18px',
+    fontSize: 16,
+    fontWeight: 600,
+    color: primary ? '#0a0a0f' : '#00ffff',
+    background: primary 
+      ? 'linear-gradient(135deg, #00ffff, #00ff88)' 
+      : 'rgba(0, 255, 255, 0.1)',
+    border: primary ? 'none' : '2px solid rgba(0, 255, 255, 0.5)',
+    borderRadius: 12,
+    cursor: 'pointer',
+    position: 'relative',
+    overflow: 'hidden',
+    transition: 'all 0.3s',
+    boxShadow: primary 
+      ? '0 0 30px rgba(0, 255, 255, 0.6)' 
+      : '0 0 15px rgba(0, 255, 255, 0.2)',
+  }}>
+    <span style={{ position: 'relative', zIndex: 1 }}>{children}</span>
+    {!primary && (
       <div style={{
         position: 'absolute',
-        top: 0,
-        left: '-100%',
-        width: '200%',
-        height: '100%',
-        background: variant === 'primary'
-          ? 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)'
-          : 'none',
-        transform: hovered ? 'skewX(-20deg)' : 'translateX(-100%)',
-        transition: 'transform 0.6s ease',
-        animation: hovered ? 'shimmer 1.5s infinite' : 'none',
+        inset: 0,
+        background: 'linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent)',
+        transform: 'translateX(-100%)',
+        transition: 'transform 0.5s',
       }} />
+    )}
+  </button>
+);
 
-      {/* 悬浮光晕 */}
-      {hovered && (
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          borderRadius: 14,
-          background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(139, 92, 246, 0.3))',
-          zIndex: -1,
-          filter: 'blur(15px)',
-        }} />
-      )}
+// 标签切换
+const TabSwitch = ({ tabs, active, onChange }) => (
+  <div style={{
+    display: 'flex',
+    background: 'rgba(0, 0, 0, 0.4)',
+    borderRadius: 12,
+    padding: 4,
+    marginBottom: 32,
+  }}>
+    {tabs.map((tab, i) => (
+      <button
+        key={i}
+        onClick={() => onChange(tab)}
+        style={{
+          flex: 1,
+          padding: '12px',
+          fontSize: 14,
+          fontWeight: 500,
+          color: active === tab ? '#00ffff' : 'rgba(255, 255, 255, 0.5)',
+          background: active === tab ? 'rgba(0, 255, 255, 0.15)' : 'transparent',
+          border: 'none',
+          borderRadius: 8,
+          cursor: 'pointer',
+          transition: 'all 0.3s',
+        }}
+      >
+        {tab}
+      </button>
+    ))}
+  </div>
+);
 
-      <span style={{ position: 'relative', zIndex: 1 }}>{children}</span>
-
-      <style>{`
-        @keyframes shimmer {
-          0% { transform: translateX(-100%) skewX(-20deg); }
-          100% { transform: translateX(100%) skewX(-20deg); }
-        }
-      `}</style>
+// 社交登录
+const SocialLogin = () => (
+  <div style={{ marginTop: 32 }}>
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: 16,
+      marginBottom: 24,
+    }}>
+      <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.1)' }} />
+      <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>其他登录方式</span>
+      <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.1)' }} />
     </div>
-  );
-};
+    <div style={{ display: 'flex', gap: 12 }}>
+      {['Google', 'GitHub', 'Apple'].map(brand => (
+        <button key={brand} style={{
+          flex: 1,
+          padding: 14,
+          background: 'rgba(255, 255, 255, 0.05)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          borderRadius: 12,
+          color: '#fff',
+          fontSize: 14,
+          cursor: 'pointer',
+          transition: 'all 0.3s',
+        }}>
+          {brand}
+        </button>
+      ))}
+    </div>
+  </div>
+);
 
-// 社交登录按钮
-const SocialButton = ({ provider, onClick }) => {
-  const [hovered, setHovered] = useState(false);
-  
-  const icons = {
-    google: '🔵',
-    github: '⚫',
-    wechat: '🟢',
-  };
-
-  return (
-    <button
-      onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        flex: 1,
-        padding: '14px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 8,
-        background: hovered ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.05)',
-        border: '1px solid rgba(255,255,255,0.1)',
-        borderRadius: 12,
-        fontSize: 14,
-        fontWeight: 500,
-        color: '#9ca3af',
-        cursor: 'pointer',
-        transition: 'all 0.3s ease',
-      }}
-    >
-      <span style={{ fontSize: 20 }}>{icons[provider]}</span>
-      <span>{provider === 'google' ? 'Google' : provider === 'github' ? 'GitHub' : '微信'}</span>
-    </button>
-  );
-};
-
-// 主组件
 export default function AuthPage() {
-  const [isLogin, setIsLogin] = useState(true);
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    name: '',
-  });
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('提交:', formData);
-  };
+  const [mode, setMode] = useState('登录');
 
   return (
     <div style={{
@@ -291,177 +268,63 @@ export default function AuthPage() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: 24,
+      background: 'linear-gradient(135deg, #0a0a0f 0%, #0f1a24 50%, #0a0a0f 100%)',
       position: 'relative',
+      overflow: 'hidden',
     }}>
-      <ParticleBackground />
-      
-      {/* 玻璃卡片 */}
-      <div style={{
-        width: '100%',
-        maxWidth: 420,
-        padding: 40,
-        position: 'relative',
-        background: 'rgba(255, 255, 255, 0.03)',
-        backdropFilter: 'blur(20px)',
-        borderRadius: 24,
-        border: '1px solid rgba(255, 255, 255, 0.08)',
-        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
-      }}>
-        {/* 顶部装饰 */}
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '60%',
-          height: 1,
-          background: 'linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.5), transparent)',
-        }} />
+      <ParticleNetwork />
 
-        {/* 标题 */}
-        <h1 style={{
-          margin: '0 0 8px',
-          fontSize: 28,
-          fontWeight: 700,
-          background: 'linear-gradient(135deg, #f9fafb 0%, #a5b4fc 100%)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          textAlign: 'center',
-          letterSpacing: '-0.5px',
-        }}>
-          {isLogin ? '欢迎回来' : '创建账号'}
-        </h1>
-        
-        <p style={{
-          margin: '0 0 32px',
-          fontSize: 14,
-          color: '#6b7280',
-          textAlign: 'center',
-        }}>
-          {isLogin ? '登录您的 VibeX 账号' : '开始您的 AI 之旅'}
-        </p>
-
-        {/* 标签切换 */}
-        <div style={{
-          display: 'flex',
-          background: 'rgba(0, 0, 0, 0.3)',
-          borderRadius: 12,
-          padding: 4,
-          marginBottom: 32,
-        }}>
-          <button
-            onClick={() => setIsLogin(true)}
-            style={{
-              flex: 1,
-              padding: '10px',
-              border: 'none',
-              borderRadius: 10,
-              fontSize: 14,
-              fontWeight: 500,
-              cursor: 'pointer',
-              background: isLogin ? 'linear-gradient(135deg, #6366f1, #8b5cf6)' : 'transparent',
-              color: isLogin ? '#fff' : '#6b7280',
-              transition: 'all 0.3s ease',
-            }}
-          >
-            登录
-          </button>
-          <button
-            onClick={() => setIsLogin(false)}
-            style={{
-              flex: 1,
-              padding: '10px',
-              border: 'none',
-              borderRadius: 10,
-              fontSize: 14,
-              fontWeight: 500,
-              cursor: 'pointer',
-              background: !isLogin ? 'linear-gradient(135deg, #6366f1, #8b5cf6)' : 'transparent',
-              color: !isLogin ? '#fff' : '#6b7280',
-              transition: 'all 0.3s ease',
-            }}
-          >
-            注册
-          </button>
+      <div style={{ position: 'relative', zIndex: 10, width: '100%', maxWidth: 440, padding: 20 }}>
+        {/* Logo */}
+        <div style={{ textAlign: 'center', marginBottom: 40 }}>
+          <div style={{
+            width: 64,
+            height: 64,
+            margin: '0 auto 16px',
+            borderRadius: 16,
+            background: 'linear-gradient(135deg, #00ffff, #00ff88)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: 32,
+            boxShadow: '0 0 40px rgba(0, 255, 255, 0.5)',
+          }}>V</div>
+          <h1 style={{ margin: 0, fontSize: 24, fontWeight: 700, color: '#fff' }}>VibeX</h1>
         </div>
 
-        {/* 表单 */}
-        <form onSubmit={handleSubmit}>
-          {!isLogin && (
-            <NeonInput
-              label="用户名"
-              placeholder="请输入用户名"
-              value={formData.name}
-              onChange={(e) => setFormData({...formData, name: e.target.value})}
-            />
-          )}
-          
-          <NeonInput
-            label="邮箱"
-            type="email"
-            placeholder="name@example.com"
-            value={formData.email}
-            onChange={(e) => setFormData({...formData, email: e.target.value})}
-          />
-          
-          <NeonInput
-            label="密码"
-            type="password"
-            placeholder="请输入密码"
-            value={formData.password}
-            onChange={(e) => setFormData({...formData, password: e.target.value})}
-          />
+        <HolographicCard>
+          <TabSwitch tabs={['登录', '注册']} active={mode} onChange={setMode} />
 
-          {isLogin && (
-            <div style={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-              marginBottom: 24,
-            }}>
-              <button style={{
-                background: 'none',
-                border: 'none',
-                fontSize: 13,
-                color: '#818cf8',
-                cursor: 'pointer',
-                padding: 0,
-                transition: 'color 0.2s',
-              }}
-              onMouseOver={(e) => e.target.style.color = '#a5b4fc'}
-              onMouseOut={(e) => e.target.style.color = '#818cf8'}
-              >
-                忘记密码?
-              </button>
+          <h2 style={{ margin: '0 0 8px', fontSize: 24, color: '#fff', textAlign: 'center' }}>
+            {mode === '登录' ? '欢迎回来' : '创建账户'}
+          </h2>
+          <p style={{ margin: '0 0 32px', color: 'rgba(255,255,255,0.5)', textAlign: 'center', fontSize: 14 }}>
+            {mode === '登录' ? '登录你的 VibeX 账号' : '开始 AI 驱动的原型设计'}
+          </p>
+
+          <EnergyInput label="邮箱" placeholder="your@email.com" />
+          <EnergyInput label="密码" type="password" placeholder="••••••••" />
+          
+          {mode === '登录' && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 24, fontSize: 13 }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'rgba(255,255,255,0.6)', cursor: 'pointer' }}>
+                <input type="checkbox" style={{ accentColor: '#00ffff' }} />
+                记住我
+              </label>
+              <a href="#" style={{ color: '#00ffff', textDecoration: 'none' }}>忘记密码?</a>
             </div>
           )}
 
-          <GlowingButton onClick={handleSubmit}>
-            {isLogin ? '登录' : '注册'}
-          </GlowingButton>
-        </form>
+          <LaserButton primary>{mode === '登录' ? '立即登录' : '创建账号'}</LaserButton>
 
-        {/* 分割线 */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          margin: '28px 0',
-          gap: 16,
-        }}>
-          <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.1)' }} />
-          <span style={{ fontSize: 13, color: '#6b7280' }}>或</span>
-          <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.1)' }} />
-        </div>
+          <SocialLogin />
+        </HolographicCard>
 
-        {/* 社交登录 */}
-        <div style={{ display: 'flex', gap: 12 }}>
-          <SocialButton provider="google" onClick={() => {}} />
-          <SocialButton provider="github" onClick={() => {}} />
-          <SocialButton provider="wechat" onClick={() => {}} />
-        </div>
+        {/* 底部提示 */}
+        <p style={{ marginTop: 24, textAlign: 'center', fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>
+          © 2024 VibeX Labs. All rights reserved.
+        </p>
       </div>
-
-      <style>{`* { box-sizing: border-box; }`}</style>
     </div>
   );
 }

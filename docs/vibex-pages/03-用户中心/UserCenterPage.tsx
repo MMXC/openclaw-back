@@ -1,445 +1,274 @@
 /**
- * 用户中心页 - 现代仪表盘设计
+ * 用户中心 - 未来科幻AI风格
  * 
- * 设计灵感:
- * 1. Bento Grid 布局 - 源自 Apple 官网产品展示
- * 2. 毛玻璃效果 - iOS/macOS 统一设计语言
- * 3. 浮动统计数字 - 源自加密货币仪表盘
- * 4. 渐变边框卡片 - 源自现代 SaaS 产品
- * 5. 涟漪菜单 - Material Design 3 交互
+ * 设计亮点:
+ * 1. 数据仪表盘 - 全息投影效果
+ * 2. 浮动计数器 - AI实时计算动画
+ * 3. 网格统计卡 - 赛博朋克风格
+ * 4. 神经连接动画 - 技能可视化
+ * 5. 扫描加载 - 模拟AI分析
  */
 
 import React, { useState, useEffect } from 'react';
 
-// 浮动数字组件
-const AnimatedCounter = ({ value, suffix = '', prefix = '' }) => {
-  const [displayValue, setDisplayValue] = useState(0);
+// 浮动计数器
+const FloatingCounter = ({ value, label, suffix = '', prefix = '', index = 0 }) => {
+  const [count, setCount] = useState(0);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const duration = 1500;
-    const steps = 60;
-    const increment = value / steps;
-    let current = 0;
-
-    const timer = setInterval(() => {
-      current += increment;
-      if (current >= value) {
-        setDisplayValue(value);
-        clearInterval(timer);
-      } else {
-        setDisplayValue(Math.floor(current));
-      }
-    }, duration / steps);
-
-    return () => clearInterval(timer);
-  }, [value]);
+    const timer = setTimeout(() => {
+      setVisible(true);
+      const duration = 2000;
+      const steps = 60;
+      const increment = value / steps;
+      let current = 0;
+      const counter = setInterval(() => {
+        current += increment;
+        if (current >= value) {
+          setCount(value);
+          clearInterval(counter);
+        } else {
+          setCount(Math.floor(current));
+        }
+      }, duration / steps);
+      return () => clearInterval(counter);
+    }, index * 200);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
-    <span style={{
-      fontSize: 32,
-      fontWeight: 700,
-      background: 'linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%)',
-      WebkitBackgroundClip: 'text',
-      WebkitTextFillColor: 'transparent',
+    <div style={{
+      padding: 24,
+      background: 'rgba(0, 255, 255, 0.03)',
+      border: '1px solid rgba(0, 255, 255, 0.15)',
+      borderRadius: 16,
+      opacity: visible ? 1 : 0,
+      transform: visible ? 'translateY(0)' : 'translateY(20px)',
+      transition: 'all 0.5s ease',
+      position: 'relative',
+      overflow: 'hidden',
     }}>
-      {prefix}{displayValue.toLocaleString()}{suffix}
-    </span>
-  );
-};
-
-// 项目卡片
-const ProjectCard = ({ title, description, status, color, onClick }) => {
-  const [hovered, setHovered] = useState(false);
-
-  return (
-    <div
-      onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        padding: 24,
-        background: 'rgba(255, 255, 255, 0.03)',
-        borderRadius: 20,
-        border: '1px solid rgba(255, 255, 255, 0.06)',
-        cursor: 'pointer',
-        transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-        transform: hovered ? 'translateY(-4px)' : 'translateY(0)',
-        boxShadow: hovered 
-          ? `0 20px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px ${color}20` 
-          : '0 4px 12px rgba(0, 0, 0, 0.1)',
-        position: 'relative',
-        overflow: 'hidden',
-      }}
-    >
-      {/* 渐变光晕 */}
       <div style={{
         position: 'absolute',
         top: -50,
         right: -50,
-        width: 150,
-        height: 150,
-        background: `radial-gradient(circle, ${color}15 0%, transparent 70%)`,
-        transition: 'opacity 0.3s',
-        opacity: hovered ? 1 : 0,
+        width: 100,
+        height: 100,
+        background: 'radial-gradient(circle, rgba(0, 255, 255, 0.15) 0%, transparent 70%)',
       }} />
-
-      {/* 状态指示器 */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginBottom: 16,
-      }}>
-        <div style={{
-          width: 10,
-          height: 10,
-          borderRadius: '50%',
-          background: color,
-          boxShadow: `0 0 12px ${color}`,
-        }} />
-        <span style={{
-          fontSize: 12,
-          padding: '4px 10px',
-          borderRadius: 20,
-          background: `${color}15`,
-          color: color,
-          fontWeight: 500,
-        }}>
-          {status}
-        </span>
-      </div>
-
-      <h3 style={{
-        margin: '0 0 8px',
-        fontSize: 18,
-        fontWeight: 600,
-        color: '#f9fafb',
-      }}>
-        {title}
-      </h3>
-
-      <p style={{
-        margin: 0,
-        fontSize: 14,
-        color: '#9ca3af',
-        lineHeight: 1.6,
-      }}>
-        {description}
-      </p>
-
-      {/* 底部装饰 */}
-      <div style={{
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        height: 3,
-        background: `linear-gradient(90deg, ${color}, transparent)`,
-        transform: 'scaleX(0)',
-        transformOrigin: 'left',
-        transition: 'transform 0.4s ease',
-      }} />
-    </div>
-  );
-};
-
-// 统计卡片
-const StatCard = ({ icon, label, value, suffix, trend, color }) => {
-  const [hovered, setHovered] = useState(false);
-
-  return (
-    <div
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        padding: 24,
-        background: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)',
-        borderRadius: 20,
-        border: '1px solid rgba(255, 255, 255, 0.08)',
-        transition: 'all 0.3s ease',
-        transform: hovered ? 'scale(1.02)' : 'scale(1)',
-      }}
-    >
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginBottom: 16,
-      }}>
-        <span style={{ fontSize: 28 }}>{icon}</span>
-        {trend && (
-          <span style={{
-            fontSize: 13,
-            color: trend > 0 ? '#34d399' : '#f87171',
-            fontWeight: 500,
-          }}>
-            {trend > 0 ? '↑' : '↓'} {Math.abs(trend)}%
-          </span>
-        )}
-      </div>
-
-      <AnimatedCounter value={value} suffix={suffix} />
-
-      <p style={{
-        margin: '8px 0 0',
-        fontSize: 14,
-        color: '#6b7280',
-      }}>
-        {label}
+      <p style={{ margin: '0 0 8px', fontSize: 13, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '1px' }}>{label}</p>
+      <p style={{ margin: 0, fontSize: 36, fontWeight: 700, color: '#fff', textShadow: '0 0 20px rgba(0, 255, 255, 0.5)' }}>
+        {prefix}{count.toLocaleString()}{suffix}
       </p>
     </div>
   );
 };
 
-// 侧边栏菜单项
-const MenuItem = ({ icon, label, active, onClick }) => {
-  const [hovered, setHovered] = useState(false);
+// 扫描加载动画
+const ScanLoader = () => (
+  <div style={{
+    width: 40,
+    height: 40,
+    position: 'relative',
+  }}>
+    <div style={{
+      position: 'absolute',
+      inset: 0,
+      border: '3px solid transparent',
+      borderTopColor: '#00ffff',
+      borderRadius: '50%',
+      animation: 'spin 1s linear infinite',
+    }} />
+    <div style={{
+      position: 'absolute',
+      inset: 4,
+      border: '3px solid transparent',
+      borderTopColor: '#00ff88',
+      borderRadius: '50%',
+      animation: 'spin 0.6s linear infinite reverse',
+    }} />
+    <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
+  </div>
+);
 
-  return (
-    <button
-      onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        width: '100%',
-        padding: '14px 16px',
-        display: 'flex',
-        alignItems: 'center',
-        gap: 12,
-        background: active ? 'linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.1))' 
-          : hovered ? 'rgba(255, 255, 255, 0.05)' 
-          : 'transparent',
-        border: 'none',
-        borderRadius: 12,
-        cursor: 'pointer',
-        transition: 'all 0.2s ease',
-        position: 'relative',
-        overflow: 'hidden',
-      }}
-    >
-      {/* 选中指示器 */}
-      {active && (
-        <div style={{
-          position: 'absolute',
-          left: 0,
-          top: '50%',
-          transform: 'translateY(-50%)',
-          width: 3,
-          height: 24,
-          background: 'linear-gradient(180deg, #818cf8, #c084fc)',
-          borderRadius: '0 2px 2px 0',
-        }} />
-      )}
-
-      <span style={{ 
-        fontSize: 20,
-        opacity: active ? 1 : hovered ? 0.8 : 0.6,
-        transition: 'opacity 0.2s',
-      }}>
-        {icon}
-      </span>
-      
-      <span style={{
-        fontSize: 15,
-        fontWeight: active ? 600 : 400,
-        color: active ? '#f9fafb' : '#9ca3af',
-        transition: 'color 0.2s',
-      }}>
-        {label}
-      </span>
-    </button>
-  );
-};
-
-// 主组件
-export default function UserCenterPage() {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [activeMenu, setActiveMenu] = useState('projects');
-
-  const projects = [
-    { title: 'VibeX 原型设计', description: 'AI 驱动的应用原型生成平台', status: '开发中', color: '#818cf8' },
-    { title: '智能工作流引擎', description: '自动化业务流程编排系统', status: '规划中', color: '#34d399' },
-    { title: '数据分析仪表盘', description: '实时业务数据可视化', status: '已上线', color: '#f472b6' },
-    { title: '客服机器人', description: '基于 LLM 的智能客服', status: '测试中', color: '#fb923c' },
+// 神经技能网络
+const NeuralSkillNetwork = () => {
+  const skills = [
+    { name: 'React', level: 90 },
+    { name: 'TypeScript', level: 85 },
+    { name: 'Node.js', level: 78 },
+    { name: 'Python', level: 72 },
+    { name: 'AI/ML', level: 65 },
   ];
 
   return (
     <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      background: 'linear-gradient(180deg, #0a0a0f 0%, #111118 100%)',
+      padding: 24,
+      background: 'rgba(0, 0, 0, 0.3)',
+      borderRadius: 16,
+      border: '1px solid rgba(0, 255, 255, 0.1)',
     }}>
-      {/* 侧边栏 */}
-      <aside style={{
-        width: sidebarCollapsed ? 80 : 260,
-        padding: '24px 16px',
-        borderRight: '1px solid rgba(255, 255, 255, 0.06)',
-        transition: 'width 0.3s ease',
-        position: 'sticky',
-        top: 0,
-        height: '100vh',
-      }}>
-        {/* Logo */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-          marginBottom: 40,
-          padding: '0 8px',
-        }}>
+      <h3 style={{ margin: '0 0 20px', fontSize: 16, color: '#fff' }}>技能矩阵</h3>
+      {skills.map((skill, i) => (
+        <div key={i} style={{ marginBottom: 16 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+            <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.8)' }}>{skill.name}</span>
+            <span style={{ fontSize: 13, color: '#00ffff' }}>{skill.level}%</span>
+          </div>
+          <div style={{ height: 6, background: 'rgba(255,255,255,0.1)', borderRadius: 3, overflow: 'hidden' }}>
+            <div style={{
+              width: `${skill.level}%`,
+              height: '100%',
+              background: 'linear-gradient(90deg, #00ffff, #00ff88)',
+              borderRadius: 3,
+              boxShadow: '0 0 10px rgba(0, 255, 255, 0.5)',
+              animation: 'grow 1s ease-out forwards',
+              animationDelay: `${i * 0.15}s`,
+              transform: 'scaleX(0)',
+              transformOrigin: 'left',
+            }} />
+          </div>
+        </div>
+      ))}
+      <style>{`@keyframes grow { 100% { transform: scaleX(1); } }`}</style>
+    </div>
+  );
+};
+
+// 活动记录项
+const ActivityItem = ({ icon, title, time, status }) => (
+  <div style={{
+    display: 'flex',
+    alignItems: 'center',
+    gap: 16,
+    padding: 16,
+    background: 'rgba(255,255,255,0.02)',
+    borderRadius: 12,
+    marginBottom: 12,
+    border: '1px solid transparent',
+    transition: 'all 0.3s',
+  }}>
+    <div style={{
+      width: 44,
+      height: 44,
+      borderRadius: 12,
+      background: 'rgba(0, 255, 255, 0.1)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontSize: 20,
+    }}>{icon}</div>
+    <div style={{ flex: 1 }}>
+      <p style={{ margin: '0 0 4px', fontSize: 14, color: '#fff' }}>{title}</p>
+      <p style={{ margin: 0, fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>{time}</p>
+    </div>
+    <span style={{
+      fontSize: 11,
+      padding: '4px 10px',
+      borderRadius: 6,
+      background: status === '完成' ? 'rgba(0, 255, 136, 0.15)' : 'rgba(255, 193, 7, 0.15)',
+      color: status === '完成' ? '#00ff88' : '#ffc107',
+    }}>{status}</span>
+  </div>
+);
+
+// 项目卡片
+const ProjectCard = ({ name, desc, progress, color }) => (
+  <div style={{
+    padding: 20,
+    background: 'rgba(255,255,255,0.03)',
+    borderRadius: 16,
+    border: '1px solid rgba(255,255,255,0.06)',
+    transition: 'all 0.3s',
+    cursor: 'pointer',
+  }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
+      <h4 style={{ margin: 0, fontSize: 16, color: '#fff' }}>{name}</h4>
+      <span style={{ fontSize: 20 }}>{color}</span>
+    </div>
+    <p style={{ margin: '0 0 16px', fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>{desc}</p>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div style={{ flex: 1, height: 4, background: 'rgba(255,255,255,0.1)', borderRadius: 2 }}>
+        <div style={{ width: `${progress}%`, height: '100%', background: color, borderRadius: 2 }} />
+      </div>
+      <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>{progress}%</span>
+    </div>
+  </div>
+);
+
+export default function UserCenterPage() {
+  const stats = [
+    { value: 1248, label: '总项目数' },
+    { value: 89, label: '活跃页面' },
+    { value: 2341, label: 'AI 生成次数' },
+    { value: 156, label: '团队成员' },
+  ];
+
+  const activities = [
+    { icon: '📄', title: '创建新页面 "用户中心"', time: '2分钟前', status: '完成' },
+    { icon: '🤖', title: 'AI 生成流程图', time: '15分钟前', status: '完成' },
+    { icon: '📤', title: '导出 React 代码', time: '1小时前', status: '处理中' },
+    { icon: '🔄', title: '更新组件库', time: '3小时前', status: '完成' },
+  ];
+
+  const projects = [
+    { name: 'VibeX Web', desc: 'AI 原型生成平台', progress: 78, color: '💜' },
+    { name: '移动端 App', desc: 'iOS/Android 应用', progress: 45, color: '🟢' },
+    { name: '仪表盘系统', desc: '数据可视化面板', progress: 92, color: '🔵' },
+  ];
+
+  return (
+    <div style={{ minHeight: '100vh', background: 'linear-gradient(180deg, #0a0a0f 0%, #0d1218 100%)', padding: 32 }}>
+      {/* 头部 */}
+      <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 40 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
           <div style={{
-            width: 40,
-            height: 40,
-            borderRadius: 12,
-            background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+            width: 64,
+            height: 64,
+            borderRadius: 20,
+            background: 'linear-gradient(135deg, #00ffff, #00ff88)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: 20,
+            fontSize: 28,
             fontWeight: 700,
-            color: '#fff',
-          }}>
-            V
-          </div>
-          {!sidebarCollapsed && (
-            <span style={{
-              fontSize: 20,
-              fontWeight: 700,
-              background: 'linear-gradient(135deg, #f9fafb, #a5b4fc)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}>
-              VibeX
-            </span>
-          )}
-        </div>
-
-        {/* 菜单 */}
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <MenuItem icon="📊" label="仪表盘" active={activeMenu === 'dashboard'} onClick={() => setActiveMenu('dashboard')} />
-          <MenuItem icon="📁" label="我的项目" active={activeMenu === 'projects'} onClick={() => setActiveMenu('projects')} />
-          <MenuItem icon="💬" label="对话记录" active={activeMenu === 'chats'} onClick={() => setActiveMenu('chats')} />
-          <MenuItem icon="📈" label="数据分析" active={activeMenu === 'analytics'} onClick={() => setActiveMenu('analytics')} />
-          <MenuItem icon="⚙️" label="设置" active={activeMenu === 'settings'} onClick={() => setActiveMenu('settings')} />
-        </nav>
-
-        {/* 折叠按钮 */}
-        <button
-          onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-          style={{
-            position: 'absolute',
-            bottom: 24,
-            right: 16,
-            width: 36,
-            height: 36,
-            borderRadius: 10,
-            border: '1px solid rgba(255,255,255,0.1)',
-            background: 'rgba(255,255,255,0.05)',
-            color: '#9ca3af',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 14,
-            transition: 'all 0.2s',
-          }}
-        >
-          {sidebarCollapsed ? '→' : '←'}
-        </button>
-      </aside>
-
-      {/* 主内容区 */}
-      <main style={{ flex: 1, padding: 32 }}>
-        {/* 头部 */}
-        <header style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: 40,
-        }}>
+            color: '#0a0a0f',
+            boxShadow: '0 0 30px rgba(0, 255, 255, 0.4)',
+          }}>Y</div>
           <div>
-            <h1 style={{
-              margin: '0 0 8px',
-              fontSize: 32,
-              fontWeight: 700,
-              color: '#f9fafb',
-            }}>
-              用户中心
-            </h1>
-            <p style={{ margin: 0, fontSize: 15, color: '#6b7280' }}>
-              欢迎回来，{sidebarCollapsed ? '' : '查看您的项目和统计数据'}
-            </p>
+            <h1 style={{ margin: 0, fontSize: 24, color: '#fff', fontWeight: 600 }}>欢迎回来, 余祥</h1>
+            <p style={{ margin: '4px 0 0', fontSize: 14, color: 'rgba(255,255,255,0.5)' }}>AI 正在分析你的使用模式...</p>
           </div>
+        </div>
+        <ScanLoader />
+      </header>
 
-          <button style={{
-            padding: '12px 24px',
-            background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-            border: 'none',
-            borderRadius: 12,
-            color: '#fff',
-            fontSize: 15,
-            fontWeight: 600,
-            cursor: 'pointer',
-            boxShadow: '0 4px 16px rgba(99, 102, 241, 0.3)',
-            transition: 'all 0.2s',
-          }}>
-            + 新建项目
-          </button>
-        </header>
+      {/* 统计卡片 */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20, marginBottom: 40 }}>
+        {stats.map((stat, i) => (
+          <FloatingCounter key={i} {...stat} index={i} />
+        ))}
+      </div>
 
-        {/* 统计卡片 - Bento Grid */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: 20,
-          marginBottom: 40,
-        }}>
-          <StatCard icon="📁" label="项目总数" value={12} trend={8} color="#818cf8" />
-          <StatCard icon="💬" label="对话消息" value={1847} trend={24} color="#34d399" />
-          <StatCard icon="⏱️" label="使用时长" value={128} suffix="h" trend={-3} color="#f472b6" />
-          <StatCard icon="✨" label="AI 生成次数" value={523} trend={15} color="#fb923c" />
+      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 24 }}>
+        {/* 项目 */}
+        <div>
+          <h3 style={{ margin: '0 0 20px', fontSize: 18, color: '#fff' }}>我的项目</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+            {projects.map((p, i) => <ProjectCard key={i} {...p} />)}
+          </div>
         </div>
 
-        {/* 项目列表 */}
-        <section>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            marginBottom: 24,
-          }}>
-            <h2 style={{
-              margin: 0,
-              fontSize: 20,
-              fontWeight: 600,
-              color: '#f9fafb',
-            }}>
-              我的项目
-            </h2>
-            <button style={{
-              background: 'none',
-              border: 'none',
-              color: '#818cf8',
-              fontSize: 14,
-              cursor: 'pointer',
-            }}>
-              查看全部 →
-            </button>
-          </div>
+        {/* 技能 */}
+        <NeuralSkillNetwork />
+      </div>
 
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-            gap: 20,
-          }}>
-            {projects.map((project, i) => (
-              <ProjectCard key={i} {...project} onClick={() => {}} />
-            ))}
-          </div>
-        </section>
-      </main>
-
-      <style>{`* { box-sizing: border-box; }`}</style>
+      {/* 活动 */}
+      <div style={{ marginTop: 32 }}>
+        <h3 style={{ margin: '0 0 20px', fontSize: 18, color: '#fff' }}>最近活动</h3>
+        {activities.map((a, i) => <ActivityItem key={i} {...a} />)}
+      </div>
     </div>
   );
 }

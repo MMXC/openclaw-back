@@ -1,469 +1,420 @@
 /**
- * AI 对话页 - 现代聊天界面设计
+ * AI 对话页 - 未来科幻AI风格
  * 
- * 设计灵感:
- * 1. 消息气泡 - iOS/WhatsApp 经典 + 现代渐变
- * 2. 输入框 - Notion/Discord 风格
- * 3. 打字机动效 - Terminal/IDE 风格
- * 4. 侧边栏折叠 - Figma/Slack 现代面板
- * 5. 消息加载 - Three dots 脉冲动画
+ * 设计亮点:
+ * 1. 全息消息气泡 - 3D透视 + 扫描线
+ * 2. 打字机回复 - 逐字输出效果
+ * 3. 神经网络连接 - 背景可视化
+ * 4. 脉冲输入框 - 能量波动动画
+ * 5. AI状态指示 - 思维计算可视化
  */
 
 import React, { useState, useEffect, useRef } from 'react';
 
-// 头像组件
-const Avatar = ({ src, name, size = 40, isAI = false }) => (
-  <div style={{
-    width: size,
-    height: size,
-    borderRadius: '50%',
-    background: isAI 
-      ? 'linear-gradient(135deg, #6366f1, #8b5cf6)' 
-      : 'linear-gradient(135deg, #34d399, #10b981)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: size * 0.4,
-    fontWeight: 600,
-    color: '#fff',
-    flexShrink: 0,
-    boxShadow: isAI ? '0 4px 12px rgba(99, 102, 241, 0.4)' : 'none',
-  }}>
-    {isAI ? 'AI' : name?.[0] || '?'}
+// 神经网络背景
+const NeuralBackground = () => (
+  <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
+    {Array.from({ length: 20 }).map((_, i) => (
+      <div key={i} style={{
+        position: 'absolute',
+        left: `${Math.random() * 100}%`,
+        top: `${Math.random() * 100}%`,
+        width: 4,
+        height: 4,
+        background: '#00ffff',
+        borderRadius: '50%',
+        animation: `pulse ${2 + Math.random() * 2}s ease-in-out infinite`,
+        animationDelay: `${Math.random() * 2}s`,
+        boxShadow: '0 0 10px #00ffff',
+      }} />
+    ))}
+    <style>{`@keyframes pulse { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 1; transform: scale(1.5); } }`}</style>
   </div>
 );
 
-// 消息气泡
-const MessageBubble = ({ message, isUser, avatar, name, timestamp }) => {
-  const [visible, setVisible] = useState(false);
+// 打字机消息
+const TypewriterMessage = ({ text, onComplete }) => {
+  const [displayed, setDisplayed] = useState('');
+  
+  useEffect(() => {
+    let i = 0;
+    const timer = setInterval(() => {
+      if (i < text.length) {
+        setDisplayed(text.slice(0, i + 1));
+        i++;
+      } else {
+        clearInterval(timer);
+        onComplete?.();
+      }
+    }, 30);
+    return () => clearInterval(timer);
+  }, [text]);
+
+  return (
+    <span>
+      {displayed}
+      {displayed.length < text.length && (
+        <span style={{
+          display: 'inline-block',
+          width: 2,
+          height: '1em',
+          background: '#00ffff',
+          marginLeft: 2,
+          verticalAlign: 'text-bottom',
+          animation: 'blink 0.7s infinite',
+        }} />
+      )}
+    </span>
+  );
+};
+
+// AI状态指示器
+const AIStatusIndicator = () => {
+  const [status, setStatus] = useState(0);
+  const statuses = ['思考中...', '检索知识库...', '生成回复...', '在线'];
 
   useEffect(() => {
-    const timer = setTimeout(() => setVisible(true), 100);
-    return () => clearTimeout(timer);
+    const timer = setInterval(() => {
+      setStatus(s => (s + 1) % 4);
+    }, 2000);
+    return () => clearInterval(timer);
   }, []);
 
   return (
     <div style={{
       display: 'flex',
-      gap: 12,
-      marginBottom: 20,
-      opacity: visible ? 1 : 0,
-      transform: visible ? 'translateY(0)' : 'translateY(10px)',
-      transition: 'all 0.3s ease',
+      alignItems: 'center',
+      gap: 8,
+      padding: '8px 14px',
+      background: 'rgba(0, 255, 255, 0.1)',
+      borderRadius: 20,
+      border: '1px solid rgba(0, 255, 255, 0.2)',
     }}>
-      {!isUser && <Avatar name={name} isAI={true} />}
-      
       <div style={{
-        maxWidth: '70%',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: isUser ? 'flex-end' : 'flex-start',
-      }}>
-        {!isUser && (
-          <span style={{
-            fontSize: 13,
-            color: '#9ca3af',
-            marginBottom: 6,
-            marginLeft: 4,
-          }}>
-            {name}
-          </span>
-        )}
-        
-        <div style={{
-          padding: '14px 18px',
-          borderRadius: isUser 
-            ? '18px 18px 4px 18px' 
-            : '18px 18px 18px 4px',
-          background: isUser 
-            ? 'linear-gradient(135deg, #6366f1, #8b5cf6)'
-            : 'rgba(255, 255, 255, 0.05)',
-          color: '#f9fafb',
-          fontSize: 15,
-          lineHeight: 1.6,
-          boxShadow: isUser ? '0 4px 12px rgba(99, 102, 241, 0.3)' : 'none',
-          wordBreak: 'break-word',
-        }}>
-          {message}
-        </div>
-
-        <span style={{
-          fontSize: 12,
-          color: '#6b7280',
-          marginTop: 6,
-          marginLeft: 4,
-          marginRight: 4,
-        }}>
-          {timestamp}
-        </span>
-      </div>
-
-      {isUser && <Avatar name={name} />}
+        width: 8,
+        height: 8,
+        borderRadius: '50%',
+        background: '#00ff88',
+        boxShadow: '0 0 10px #00ff88',
+        animation: 'pulse 1.5s infinite',
+      }} />
+      <span style={{ fontSize: 12, color: '#00ffff' }}>{statuses[status]}</span>
     </div>
   );
 };
 
-// 打字机动效
-const TypingIndicator = () => (
+// 全息气泡
+const HolographicBubble = ({ children, isUser, name, time, typing = false }) => (
   <div style={{
     display: 'flex',
-    gap: 4,
-    padding: '14px 18px',
-    background: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 18,
-    width: 'fit-content',
+    gap: 12,
+    marginBottom: 20,
+    justifyContent: isUser ? 'flex-end' : 'flex-start',
   }}>
-    {[0, 1, 2].map(i => (
-      <div
-        key={i}
-        style={{
-          width: 8,
-          height: 8,
-          borderRadius: '50%',
-          background: '#818cf8',
-          animation: `bounce 1.4s ease-in-out ${i * 0.2}s infinite`,
-        }}
-      />
-    ))}
-    <style>{`
-      @keyframes bounce {
-        0%, 60%, 100% { transform: translateY(0); }
-        30% { transform: translateY(-8px); }
-      }
-    `}</style>
+    {!isUser && (
+      <div style={{
+        width: 40,
+        height: 40,
+        borderRadius: 12,
+        background: 'linear-gradient(135deg, #00ffff, #00ff88)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: 18,
+        fontWeight: 700,
+        color: '#0a0a0f',
+        boxShadow: '0 0 20px rgba(0, 255, 255, 0.5)',
+      }}>AI</div>
+    )}
+    <div style={{ maxWidth: '70%' }}>
+      {!isUser && (
+        <p style={{ margin: '0 0 6px', fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>{name}</p>
+      )}
+      <div style={{
+        padding: '16px 20px',
+        borderRadius: isUser ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
+        background: isUser 
+          ? 'linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 255, 136, 0.2))'
+          : 'rgba(0, 0, 0, 0.4)',
+        border: '1px solid',
+        borderColor: isUser ? 'rgba(0, 255, 255, 0.3)' : 'rgba(0, 255, 255, 0.1)',
+        color: '#fff',
+        fontSize: 15,
+        lineHeight: 1.6,
+        boxShadow: isUser ? '0 0 20px rgba(0, 255, 255, 0.2)' : 'none',
+      }}>
+        {typing ? <TypingAnimation /> : children}
+      </div>
+      <p style={{ margin: '6px 0 0', fontSize: 11, color: 'rgba(255,255,255,0.4)', textAlign: isUser ? 'right' : 'left' }}>{time}</p>
+    </div>
+    {isUser && (
+      <div style={{
+        width: 40,
+        height: 40,
+        borderRadius: 12,
+        background: 'linear-gradient(135deg, #8b5cf6, #6366f1)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: 18,
+        fontWeight: 700,
+        color: '#fff',
+      }}>Y</div>
+    )}
   </div>
 );
 
-// 输入框
-const ChatInput = ({ value, onChange, onSend }) => {
+// 打字动画
+const TypingAnimation = () => (
+  <div style={{ display: 'flex', gap: 4 }}>
+    {[0, 1, 2].map(i => (
+      <div key={i} style={{
+        width: 8,
+        height: 8,
+        borderRadius: '50%',
+        background: '#00ffff',
+        animation: `bounce 1.4s ${i * 0.2}s infinite`,
+      }} />
+    ))}
+    <style>{`@keyframes bounce { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-8px); } }`}</style>
+  </div>
+);
+
+// 脉冲输入框
+const PulseInput = ({ value, onChange, onSend }) => {
   const [focused, setFocused] = useState(false);
 
   return (
     <div style={{
       padding: '16px 24px',
-      background: 'rgba(0, 0, 0, 0.3)',
+      background: 'rgba(0, 0, 0, 0.6)',
+      borderTop: '1px solid rgba(0, 255, 255, 0.1)',
       backdropFilter: 'blur(20px)',
-      borderTop: '1px solid rgba(255, 255, 255, 0.06)',
     }}>
       <div style={{
         display: 'flex',
         alignItems: 'flex-end',
         gap: 12,
         padding: 12,
-        background: focused ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.04)',
-        borderRadius: 20,
+        background: focused ? 'rgba(0, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.03)',
+        borderRadius: 16,
         border: '1px solid',
-        borderColor: focused ? 'rgba(99, 102, 241, 0.5)' : 'rgba(255, 255, 255, 0.06)',
-        transition: 'all 0.3s ease',
+        borderColor: focused ? 'rgba(0, 255, 255, 0.5)' : 'rgba(0, 255, 255, 0.1)',
+        transition: 'all 0.3s',
+        boxShadow: focused ? '0 0 30px rgba(0, 255, 255, 0.1)' : 'none',
       }}>
-        {/* 附件按钮 */}
         <button style={{
-          width: 36,
-          height: 36,
+          width: 40,
+          height: 40,
           borderRadius: 10,
-          border: 'none',
-          background: 'rgba(255, 255, 255, 0.05)',
-          color: '#9ca3af',
+          border: '1px solid rgba(0, 255, 255, 0.3)',
+          background: 'rgba(0, 255, 255, 0.05)',
+          color: '#00ffff',
           cursor: 'pointer',
           fontSize: 18,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          transition: 'all 0.2s',
-        }}>
-          +
-        </button>
-
+        }}>+</button>
+        
         <textarea
           value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder="输入消息..."
+          onChange={e => onChange(e.target.value)}
+          placeholder="描述你的需求..."
           rows={1}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-              e.preventDefault();
-              onSend();
-            }
-          }}
           style={{
             flex: 1,
             background: 'transparent',
             border: 'none',
             outline: 'none',
-            color: '#f9fafb',
+            color: '#fff',
             fontSize: 15,
-            lineHeight: 1.6,
             resize: 'none',
-            maxHeight: 120,
             minHeight: 24,
-            fontFamily: 'inherit',
+            maxHeight: 120,
           }}
         />
-
-        {/* 发送按钮 */}
+        
         <button
           onClick={onSend}
           disabled={!value.trim()}
           style={{
-            width: 40,
-            height: 40,
+            width: 44,
+            height: 44,
             borderRadius: 12,
             border: 'none',
             background: value.trim() 
-              ? 'linear-gradient(135deg, #6366f1, #8b5cf6)' 
-              : 'rgba(255, 255, 255, 0.05)',
-            color: value.trim() ? '#fff' : '#6b7280',
+              ? 'linear-gradient(135deg, #00ffff, #00ff88)' 
+              : 'rgba(255, 255, 255, 0.1)',
+            color: value.trim() ? '#0a0a0f' : 'rgba(255,255,255,0.3)',
             cursor: value.trim() ? 'pointer' : 'not-allowed',
-            fontSize: 16,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'all 0.2s',
-            boxShadow: value.trim() ? '0 4px 12px rgba(99, 102, 241, 0.3)' : 'none',
+            fontSize: 18,
+            boxShadow: value.trim() ? '0 0 20px rgba(0, 255, 255, 0.5)' : 'none',
+            transition: 'all 0.3s',
           }}
-        >
-          ➤
-        </button>
+        >➤</button>
       </div>
     </div>
   );
 };
 
-// 聊天列表项
-const ChatListItem = ({ title, lastMessage, time, unread, active, onClick }) => (
-  <button
-    onClick={onClick}
-    style={{
-      width: '100%',
-      padding: '16px 20px',
-      display: 'flex',
-      alignItems: 'center',
-      gap: 12,
-      background: active ? 'rgba(99, 102, 241, 0.1)' : 'transparent',
-      border: 'none',
-      borderLeft: active ? '3px solid #818cf8' : '3px solid transparent',
-      cursor: 'pointer',
-      textAlign: 'left',
-      transition: 'all 0.2s',
-    }}
-  >
-    <Avatar name={title} size={44} isAI={true} />
-    
-    <div style={{ flex: 1, minWidth: 0 }}>
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginBottom: 4,
-      }}>
-        <span style={{
-          fontSize: 15,
-          fontWeight: active ? 600 : 500,
-          color: '#f9fafb',
-        }}>
-          {title}
-        </span>
-        <span style={{ fontSize: 12, color: '#6b7280' }}>
-          {time}
-        </span>
-      </div>
-      
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-      }}>
-        <span style={{
-          fontSize: 13,
-          color: '#9ca3af',
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          maxWidth: 180,
-        }}>
-          {lastMessage}
-        </span>
-        
-        {unread > 0 && (
-          <span style={{
-            minWidth: 20,
-            height: 20,
-            padding: '0 6px',
-            borderRadius: 10,
-            background: '#818cf8',
-            color: '#fff',
-            fontSize: 11,
-            fontWeight: 600,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-            {unread}
-          </span>
-        )}
-      </div>
-    </div>
-  </button>
-);
-
-// 主组件
 export default function ChatPage() {
   const [messages, setMessages] = useState([
-    { id: 1, text: '你好！我是 VibeX AI 助手。有什么可以帮助你的吗？', isUser: false, name: 'VibeX', timestamp: '10:30' },
-    { id: 2, text: '你好！我想创建一个任务管理应用。', isUser: true, name: '你', timestamp: '10:31' },
-    { id: 3, text: '好的，我来帮你。请问你希望这个应用有哪些核心功能？比如任务创建、分类、提醒、协作等？', isUser: false, name: 'VibeX', timestamp: '10:31' },
+    { id: 1, text: '你好！我是 VibeX AI 助手。我可以帮助你创建应用原型、设计流程图、生成代码等。有什么我可以帮你的吗？', isUser: false, name: 'VibeX AI', time: '10:30', typing: false },
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [replyText, setReplyText] = useState('');
   const messagesEndRef = useRef(null);
 
-  const scrollToBottom = () => {
+  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  useEffect(scrollToBottom, [messages]);
+  }, [messages]);
 
   const handleSend = () => {
     if (!inputValue.trim()) return;
 
-    const newMessage = {
+    const newMsg = {
       id: Date.now(),
       text: inputValue,
       isUser: true,
       name: '你',
-      timestamp: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
+      time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
     };
-
-    setMessages(prev => [...prev, newMessage]);
+    setMessages(prev => [...prev, newMsg]);
     setInputValue('');
-
-    // 模拟 AI 回复
     setIsTyping(true);
+
+    // 模拟AI回复
     setTimeout(() => {
       setIsTyping(false);
+      const responses = [
+        '明白了！让我为你创建这个页面设计。我会生成一个现代科技风格的界面...',
+        '好的，我来分析你的需求并生成相应的原型。稍等片刻...',
+        '收到！我正在为你构建这个功能，这将包括完整的交互设计...',
+      ];
+      setReplyText(responses[Math.floor(Math.random() * responses.length)]);
       setMessages(prev => [...prev, {
         id: Date.now() + 1,
-        text: '明白了！让我为你创建一个完整的任务管理应用方案。我们可以从需求分析开始...',
+        text: '',
         isUser: false,
-        name: 'VibeX',
-        timestamp: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
+        name: 'VibeX AI',
+        time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
+        typing: false,
+        fullText: replyText || responses[0],
       }]);
     }, 2000);
   };
 
-  const chats = [
-    { id: 1, title: 'VibeX AI', lastMessage: '明白了！让我为你创建...', time: '10:31', unread: 0, active: true },
-    { id: 2, title: '产品助手', lastMessage: '这是今天的任务清单', time: '昨天', unread: 3, active: false },
-    { id: 3, title: '代码审查', lastMessage: 'PR #123 已通过', time: '昨天', unread: 0, active: false },
-    { id: 4, title: '数据分析', lastMessage: '周报已生成', time: '周三', unread: 1, active: false },
-  ];
-
   return (
-    <div style={{
-      display: 'flex',
-      height: '100vh',
-      background: '#0a0a0f',
-    }}>
+    <div style={{ display: 'flex', height: '100vh', background: '#0a0a0f' }}>
       {/* 侧边栏 */}
-      <aside style={{
-        width: 320,
-        borderRight: '1px solid rgba(255, 255, 255, 0.06)',
-        display: 'flex',
-        flexDirection: 'column',
-      }}>
-        {/* 搜索栏 */}
-        <div style={{ padding: 20 }}>
-          <div style={{
-            padding: '10px 16px',
-            background: 'rgba(255, 255, 255, 0.04)',
-            borderRadius: 12,
-            border: '1px solid rgba(255, 255, 255, 0.06)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-            color: '#6b7280',
-            fontSize: 14,
-          }}>
-            🔍 搜索对话...
-          </div>
-        </div>
-
-        {/* 聊天列表 */}
-        <div style={{ flex: 1, overflowY: 'auto' }}>
-          {chats.map(chat => (
-            <ChatListItem key={chat.id} {...chat} onClick={() => {}} />
+      <aside style={{ width: 280, borderRight: '1px solid rgba(0,255,255,0.1)', padding: 20 }}>
+        <div style={{
+          padding: '12px 16px',
+          background: 'rgba(0, 255, 255, 0.05)',
+          borderRadius: 12,
+          border: '1px solid rgba(0, 255, 255, 0.1)',
+          color: 'rgba(255,255,255,0.6)',
+          fontSize: 14,
+          marginBottom: 24,
+        }}>🔍 搜索对话...</div>
+        
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {[
+            { title: 'VibeX AI', msg: '明白了！让我为你创建...', time: '10:30', active: true },
+            { title: '产品助手', msg: '这是今天的任务清单', time: '昨天', active: false },
+            { title: '代码审查', msg: 'PR #123 已通过', time: '昨天', active: false },
+          ].map((chat, i) => (
+            <button key={i} style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              padding: 14,
+              background: chat.active ? 'rgba(0, 255, 255, 0.1)' : 'transparent',
+              border: 'none',
+              borderLeft: chat.active ? '3px solid #00ffff' : '3px solid transparent',
+              borderRadius: 8,
+              cursor: 'pointer',
+              textAlign: 'left',
+            }}>
+              <div style={{
+                width: 40,
+                height: 40,
+                borderRadius: 10,
+                background: 'linear-gradient(135deg, #00ffff, #00ff88)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 16,
+                fontWeight: 700,
+                color: '#0a0a0f',
+              }}>{chat.title[0]}</div>
+              <div style={{ flex: 1 }}>
+                <p style={{ margin: 0, fontSize: 14, color: '#fff' }}>{chat.title}</p>
+                <p style={{ margin: '4px 0 0', fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>{chat.msg}</p>
+              </div>
+            </button>
           ))}
         </div>
       </aside>
 
       {/* 主聊天区 */}
-      <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', position: 'relative' }}>
+        <NeuralBackground />
+        
         {/* 头部 */}
         <header style={{
           padding: '20px 24px',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+          borderBottom: '1px solid rgba(0,255,255,0.1)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
+          position: 'relative',
+          zIndex: 10,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <Avatar name="VibeX" size={40} isAI={true} />
+            <div style={{
+              width: 44,
+              height: 44,
+              borderRadius: 14,
+              background: 'linear-gradient(135deg, #00ffff, #00ff88)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 20,
+              fontWeight: 700,
+              color: '#0a0a0f',
+              boxShadow: '0 0 20px rgba(0, 255, 255, 0.5)',
+            }}>V</div>
             <div>
-              <h2 style={{ margin: 0, fontSize: 17, fontWeight: 600, color: '#f9fafb' }}>
-                VibeX AI
-              </h2>
-              <span style={{ fontSize: 13, color: '#34d399' }}>● 在线</span>
+              <h2 style={{ margin: 0, fontSize: 17, fontWeight: 600, color: '#fff' }}>VibeX AI</h2>
+              <AIStatusIndicator />
             </div>
-          </div>
-
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button style={{
-              width: 36,
-              height: 36,
-              borderRadius: 10,
-              border: '1px solid rgba(255,255,255,0.1)',
-              background: 'rgba(255,255,255,0.05)',
-              color: '#9ca3af',
-              cursor: 'pointer',
-              fontSize: 16,
-            }}>
-              ⋮
-            </button>
           </div>
         </header>
 
-        {/* 消息列表 */}
-        <div style={{
-          flex: 1,
-          overflowY: 'auto',
-          padding: '24px',
-        }}>
+        {/* 消息 */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: 24, position: 'relative', zIndex: 10 }}>
           {messages.map(msg => (
-            <MessageBubble
+            <HolographicBubble
               key={msg.id}
-              message={msg.text}
               isUser={msg.isUser}
               name={msg.name}
-              timestamp={msg.timestamp}
-            />
+              time={msg.time}
+              typing={isTyping && msg.id === messages[messages.length - 1]?.id}
+            >
+              {msg.fullText ? <TypewriterMessage text={msg.fullText} /> : msg.text}
+            </HolographicBubble>
           ))}
-          
-          {isTyping && <TypingIndicator />}
-          
           <div ref={messagesEndRef} />
         </div>
 
-        {/* 输入框 */}
-        <ChatInput
+        <PulseInput
           value={inputValue}
           onChange={setInputValue}
           onSend={handleSend}
         />
       </main>
-
-      <style>{`* { box-sizing: border-box; }`}</style>
     </div>
   );
 }
