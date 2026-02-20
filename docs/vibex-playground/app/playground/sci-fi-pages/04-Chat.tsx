@@ -181,15 +181,20 @@ const TypingAnimation = () => (
 );
 
 // 脉冲输入框
-const PulseInput = ({ value, onChange, onSend }) => {
+const PulseInput = ({ value, onChange, onSend, mobileMode = false }) => {
   const [focused, setFocused] = useState(false);
 
   return (
     <div style={{
-      padding: '16px 24px',
-      background: 'rgba(0, 0, 0, 0.6)',
+      padding: mobileMode ? '12px 16px' : '16px 24px',
+      background: 'rgba(0, 0, 0, 0.8)',
       borderTop: '1px solid rgba(0, 255, 255, 0.1)',
       backdropFilter: 'blur(20px)',
+      position: mobileMode ? 'fixed' : 'relative',
+      bottom: mobileMode ? 0 : 'auto',
+      left: mobileMode ? 0 : 'auto',
+      right: mobileMode ? 0 : 'auto',
+      zIndex: 100,
     }}>
       <div style={{
         display: 'flex',
@@ -267,7 +272,7 @@ interface Message {
   fullText?: string;
 }
 
-export default function ChatPage() {
+export default function ChatPage({ mobileMode = false }) {
   const [messages, setMessages] = useState<Message[]>([
     { id: 1, text: '你好！我是 VibeX AI 助手。我可以帮助你创建应用原型、设计流程图、生成代码等。有什么我可以帮你的吗？', isUser: false, name: 'VibeX AI', time: '10:30', typing: false },
   ]);
@@ -317,8 +322,9 @@ export default function ChatPage() {
   };
 
   return (
-    <div style={{ display: 'flex', height: '100vh', background: '#0a0a0f' }}>
-      {/* 侧边栏 */}
+    <div style={{ display: 'flex', height: '100%', background: '#0a0a0f', flexDirection: mobileMode ? 'column' : 'row' }}>
+      {/* 侧边栏 - 移动端隐藏 */}
+      {!mobileMode && (
       <aside style={{ width: 280, borderRight: '1px solid rgba(0,255,255,0.1)', padding: 20 }}>
         <div style={{
           padding: '12px 16px',
@@ -368,9 +374,10 @@ export default function ChatPage() {
           ))}
         </div>
       </aside>
+      )}
 
       {/* 主聊天区 */}
-      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', position: 'relative' }}>
+      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', position: 'relative', height: mobileMode ? '100%' : 'auto' }}>
         <NeuralBackground />
         
         {/* 头部 */}
@@ -424,6 +431,7 @@ export default function ChatPage() {
           value={inputValue}
           onChange={setInputValue}
           onSend={handleSend}
+          mobileMode={mobileMode}
         />
       </main>
     </div>

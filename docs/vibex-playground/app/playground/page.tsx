@@ -417,6 +417,7 @@ function PlaygroundContent() {
   const [showGrid, setShowGrid] = useState(false);
   const [showMore, setShowMore] = useState(false);
   const [sciFiPreview, setSciFiPreview] = useState(false);
+  const [mobileMode, setMobileMode] = useState(false);
   
   const config = pageConfigsData[currentPageId] || pageConfigsData.landing;
   const [page, setPage] = useState<PageState>({ id: '', name: config.name, controls: [] });
@@ -576,6 +577,22 @@ function PlaygroundContent() {
                 </label>
               </div>
               <button 
+                onClick={() => setMobileMode(!mobileMode)}
+                style={{
+                  padding: '6px 12px',
+                  background: mobileMode ? 'linear-gradient(135deg, #00ffff, #00ff88)' : 'rgba(0,255,255,0.1)',
+                  border: '1px solid',
+                  borderColor: mobileMode ? '#00ffff' : 'rgba(0,255,255,0.3)',
+                  borderRadius: 6,
+                  color: mobileMode ? '#0a0a0f' : '#00ffff',
+                  fontSize: 12,
+                  cursor: 'pointer',
+                  marginLeft: 8,
+                }}
+              >
+                {mobileMode ? '📱 手机' : '🖥️ 桌面'}
+              </button>
+              <button 
                 onClick={() => setSciFiPreview(!sciFiPreview)}
                 style={{
                   padding: '6px 12px',
@@ -586,7 +603,7 @@ function PlaygroundContent() {
                   color: sciFiPreview ? '#0a0a0f' : '#00ffff',
                   fontSize: 12,
                   cursor: 'pointer',
-                  marginLeft: 12,
+                  marginLeft: 8,
                 }}
               >
                 {sciFiPreview ? '🔙 返回编辑' : '🚀 科幻预览'}
@@ -604,9 +621,27 @@ function PlaygroundContent() {
               >
                 {/* 科幻预览模式 */}
                 {sciFiPreview ? (
-                  <div style={{ width: '100%', height: '100%', overflow: 'auto', background: '#0a0a0f' }}>
+                  <div style={{ 
+                    width: '100%', 
+                    height: '100%', 
+                    overflow: 'auto', 
+                    background: '#0a0a0f',
+                    display: 'flex',
+                    justifyContent: mobileMode ? 'center' : 'flex-start',
+                    padding: mobileMode ? '20px' : '0',
+                  }}>
                     {sciFiPageComponents[currentPageId] ? (
-                      React.createElement(sciFiPageComponents[currentPageId])
+                      <div style={{
+                        width: mobileMode ? '375px' : '100%',
+                        maxWidth: mobileMode ? '375px' : '100%',
+                        height: mobileMode ? '667px' : '100%',
+                        borderRadius: mobileMode ? '30px' : '0',
+                        overflow: 'hidden',
+                        boxShadow: mobileMode ? '0 0 40px rgba(0,255,255,0.3)' : 'none',
+                        border: mobileMode ? '3px solid rgba(0,255,255,0.3)' : 'none',
+                      }}>
+                        {React.createElement(sciFiPageComponents[currentPageId], { mobileMode } as any)}
+                      </div>
                     ) : (
                       <div style={{ padding: 40, color: '#666', textAlign: 'center' }}>
                         该页面暂无科幻风格版本
