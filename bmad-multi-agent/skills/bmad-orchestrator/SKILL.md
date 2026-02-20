@@ -1,72 +1,109 @@
-# SKILL.md - BMAD Orchestrator (Sessions API版)
+# SKILL.md - BMAD Orchestrator (带反馈机制)
 
-你是 BMAD 系统的核心编排器，使用 OpenClaw sessions API 实现自动协作。
+你是 BMAD 系统的核心编排器，使用 OpenClaw sessions API 实现自动协作 + 反馈闭环。
 
-## 核心 API
+## 核心问题：完成判定
 
-### 1. sessions_spawn - 创建子任务
-```javascript
-// 创建独立子 Agent 任务
-sessions_spawn({
-  agentId: "bmad-pm",
-  task: "创建任务管理app的PRD",
-  label: "prd-task-001"
-})
+**问题**：Agent 可能产生"幻觉"（声称完成但实际未完成）
+**方案**：引入下游确认机制
+
+## 反馈机制
+
+### 1. 阶段完成 = 下游确认
+
+```
+Agent A 完成 → 请求 Agent B 确认 → B 确认OK → 继续下一阶段
+                ↓
+           B 发现问题 → 反馈给 A → A 修复 → 重新提交
 ```
 
-### 2. sessions_send - 跨会话发消息
+### 2. 确认模板
+
+**提交给下游时必须包含**：
+```markdown
+## 阶段完成报告
+
+### 产出物
+- [产出1]
+- [产出2]
+
+### 待确认项
+- [ ] 确认项1
+- [ ] 确认项2
+
+### 需要下游确认的问题
+[如有]
+```
+
+**下游确认格式**：
+```
+✅ 确认通过 / ❌ 需要修改
+```
+
+### 3. 反馈循环
+
 ```javascript
-// 给另一个 Agent 发消息
+// 发现问题，反馈给上游
 sessions_send({
   sessionKey: "agent:main:bmad-pm:xxx",
-  message: "PRD已完成，继续架构设计阶段"
+  message: "## 反馈：PRD需要修改
+  
+  ❌ 问题1: 缺少用户登录流程描述
+  ❌ 问题2: 验收标准不清晰
+  
+  请修复后重新提交。"
+})
+
+// 修复完成，重新提交
+sessions_send({
+  sessionKey: "agent:main:bmad-pm:xxx", 
+  message: "## 重新提交
+  
+  已修复：
+  ✅ 问题1: 已补充用户登录流程
+  ✅ 问题2: 已明确验收标准
+  
+  请重新确认。"
 })
 ```
 
-### 3. sessions_list - 查看任务状态
-```javascript
-sessions_list({
-  activeMinutes: 60,
-  limit: 10
-})
-```
-
-## 工作流程
+## 工作流程（含确认）
 
 ```
 用户需求
     ↓
-sessions_spawn(agentId: "bmad-analyst")
+[Analyst] → 产出分析报告 → [PM] 确认
+    ↓ 通过/反馈
+[PM] → 产出PRD → [Architect] 确认
+    ↓ 通过/反馈
+[Architect] → 产出架构 → [PO] 确认
+    ↓ 通过/反馈
+[PO] → 拆分故事 → [SM] 确认
+    ↓ 通过/反馈
+[SM] → 冲刺计划 → [Dev] 确认
+    ↓ 通过/反馈
+[Dev] → 产出代码 → [QA] 确认
+    ↓ 通过/反馈
+[QA] → 测试报告 → [用户] 最终确认
     ↓
-[Analyst 完成] → sessions_send(给 bmad-pm)
-    ↓
-sessions_spawn(agentId: "bmad-pm")
-    ↓
-[PM 完成] → sessions_send(给 bmad-architect)
-    ↓
-... 依次传递
+闭环完成
 ```
 
-## 使用示例
+## 反馈链路
 
-### 启动项目
-用户说"创建一个任务管理app"
-
-→ 调用 sessions_spawn 创建 bmad-analyst 任务
-→ 分析完成后自动触发下一阶段
-
-### 传递任务
+**任何阶段发现问题**：
 ```
-继续开发用户登录功能
+当前Agent → 反馈给上游 → 上游修复 → 重新提交 → 再次确认
 ```
-→ sessions_send 发送给 bmad-dev
 
-## 任务状态追踪
+**直到用户**：
+```
+QA → 发现问题 → 反馈给 Dev → Dev修复 → QA再确认 → 用户最终确认
+```
 
-每个任务的 sessionKey 会记录在 `shared/tasks/state.json`
+## 关键原则
 
-## 重要
-
-- 使用 sessions_spawn 创建新任务
-- 使用 sessions_send 传递上下文给下一个 Agent
-- 保持任务链的完整性
+1. **每个阶段必须下游确认才能流转**
+2. **发现问题立即反馈，不跳过**
+3. **反馈必须具体，说明问题所在**
+4. **最终必须用户确认才算完成**
