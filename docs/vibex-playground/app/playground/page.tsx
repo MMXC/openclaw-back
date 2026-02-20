@@ -1,11 +1,40 @@
 'use client';
 
-import { useState, useEffect, Suspense, useRef } from 'react';
+import React, { useState, useEffect, Suspense, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { DndContext, DragEndEvent, useDraggable, useDroppable } from '@dnd-kit/core';
 import { Toolbar } from './components/Toolbar';
 import { AIChatPanel } from './components/AIChatPanel';
 import styles from './playground.module.css';
+
+// 科幻风格完整页面组件
+import SciFiLanding from './sci-fi-pages/01-Landing';
+import SciFiAuth from './sci-fi-pages/02-Auth';
+import SciFiDashboard from './sci-fi-pages/03-Dashboard';
+import SciFiChat from './sci-fi-pages/04-Chat';
+import SciFiFlow from './sci-fi-pages/05-Flow';
+import SciFiPageList from './sci-fi-pages/06-PageList';
+import SciFiEditor from './sci-fi-pages/07-Editor';
+import SciFiPreview from './sci-fi-pages/08-Preview';
+import SciFiExport from './sci-fi-pages/09-Export';
+import SciFiProjectSettings from './sci-fi-pages/10-ProjectSettings';
+import SciFiTemplates from './sci-fi-pages/11-Templates';
+import SciFiUserSettings from './sci-fi-pages/12-UserSettings';
+
+const sciFiPageComponents: Record<string, React.FC> = {
+  'landing': SciFiLanding,
+  'auth': SciFiAuth,
+  'dashboard': SciFiDashboard,
+  'chat': SciFiChat,
+  'flow': SciFiFlow,
+  'pages': SciFiPageList,
+  'editor': SciFiEditor,
+  'preview': SciFiPreview,
+  'export': SciFiExport,
+  'settings-project': SciFiProjectSettings,
+  'templates': SciFiTemplates,
+  'settings-user': SciFiUserSettings,
+};
 
 interface Position {
   x: number;
@@ -387,6 +416,7 @@ function PlaygroundContent() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showGrid, setShowGrid] = useState(false);
   const [showMore, setShowMore] = useState(false);
+  const [sciFiPreview, setSciFiPreview] = useState(false);
   
   const config = pageConfigsData[currentPageId] || pageConfigsData.landing;
   const [page, setPage] = useState<PageState>({ id: '', name: config.name, controls: [] });
@@ -545,6 +575,22 @@ function PlaygroundContent() {
                   显示网格
                 </label>
               </div>
+              <button 
+                onClick={() => setSciFiPreview(!sciFiPreview)}
+                style={{
+                  padding: '6px 12px',
+                  background: sciFiPreview ? 'linear-gradient(135deg, #00ffff, #00ff88)' : 'rgba(0,255,255,0.1)',
+                  border: '1px solid',
+                  borderColor: sciFiPreview ? '#00ffff' : 'rgba(0,255,255,0.3)',
+                  borderRadius: 6,
+                  color: sciFiPreview ? '#0a0a0f' : '#00ffff',
+                  fontSize: 12,
+                  cursor: 'pointer',
+                  marginLeft: 12,
+                }}
+              >
+                {sciFiPreview ? '🔙 返回编辑' : '🚀 科幻预览'}
+              </button>
             </div>
           )}
 
@@ -556,28 +602,43 @@ function PlaygroundContent() {
                 className={styles.canvas}
                 onClick={handleCanvasClick}
               >
-                {showGrid && (
-                  <div 
-                    className={styles.gridOverlay}
-                    style={{ 
-                      backgroundImage: `linear-gradient(to right, #e0e0e0 1px, transparent 1px), linear-gradient(to bottom, #e0e0e0 1px, transparent 1px)`,
-                      backgroundSize: `${GRID_SIZE}px ${GRID_SIZE}px`
-                    }}
-                  />
+                {/* 科幻预览模式 */}
+                {sciFiPreview ? (
+                  <div style={{ width: '100%', height: '100%', overflow: 'auto', background: '#0a0a0f' }}>
+                    {sciFiPageComponents[currentPageId] ? (
+                      React.createElement(sciFiPageComponents[currentPageId])
+                    ) : (
+                      <div style={{ padding: 40, color: '#666', textAlign: 'center' }}>
+                        该页面暂无科幻风格版本
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <>
+                    {showGrid && (
+                      <div 
+                        className={styles.gridOverlay}
+                        style={{ 
+                          backgroundImage: `linear-gradient(to right, #e0e0e0 1px, transparent 1px), linear-gradient(to bottom, #e0e0e0 1px, transparent 1px)`,
+                          backgroundSize: `${GRID_SIZE}px ${GRID_SIZE}px`
+                        }}
+                      />
+                    )}
+                    {page.controls.map(control => (
+                      <DraggableControl
+                        key={control.id}
+                        control={control}
+                        isSelected={selectedControl?.id === control.id}
+                        onSelect={() => setSelectedControl(control)}
+                        onMove={(delta) => moveControl(control.id, delta)}
+                        onResize={(delta) => resizeControl(control.id, delta)}
+                        onDelete={() => deleteControl(control.id)}
+                      >
+                        {renderControl(control)}
+                      </DraggableControl>
+                    ))}
+                  </>
                 )}
-                {page.controls.map(control => (
-                  <DraggableControl
-                    key={control.id}
-                    control={control}
-                    isSelected={selectedControl?.id === control.id}
-                    onSelect={() => setSelectedControl(control)}
-                    onMove={(delta) => moveControl(control.id, delta)}
-                    onResize={(delta) => resizeControl(control.id, delta)}
-                    onDelete={() => deleteControl(control.id)}
-                  >
-                    {renderControl(control)}
-                  </DraggableControl>
-                ))}
               </div>
             </div>
           ) : (
