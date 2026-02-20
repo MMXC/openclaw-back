@@ -1,283 +1,372 @@
 #!/bin/bash
-# BMAD-Method OpenClaw 部署脚本
-# 用于 OE 服务器
+# BMAD 多 Agent 系统一键安装脚本
+# 部署到远程 OpenClaw 服务器
 
 set -e
 
-SERVER="root@106.14.142.124"
-PASS="1qaz!QAZ1qaz"
-
-echo "=== BMAD-Method Skill 安装脚本 ==="
-
-# 创建 skills 目录结构
-sshpass -p "$PASS" ssh -o StrictHostKeyChecking=no $SERVER << 'EOF'
-set -e
-
-SKILL_DIR="/root/.openclaw/workspace/skills/bmad"
-mkdir -p "$SKILL_DIR"
-
-# 创建主 BMAD Orchestrator Skill
-cat > "$SKILL_DIR/SKILL.md" << 'SKILL'
-# BMAD-Method Orchestrator
-
-你是 BMAD (Breakthrough Method for Agile AI-Driven Development) 方法论的实施者。
-
-## 你的角色
-
-你是整个开发流程的协调者，负责在用户和各个专业角色之间调度。
-
-## 可用角色
-
-使用以下命令切换角色：
-- `@analyst` - 业务分析师：市场研究、需求获取
-- `@pm` - 产品经理：PRD创建、功能优先级
-- `@architect` - 解决方案架构师：系统设计、技术架构
-- `@dev` - 开发者：代码实现、测试
-- `@qa` - QA 专家：代码审查、测试验证
-- `@ux-expert` - UX 设计师：界面设计
-- `@sm` - Scrum Master：冲刺规划、故事创建
-
-## 工作流程
-
-### 1. 规划阶段
-当用户提出项目想法时：
-1. 切换到 @analyst 进行需求分析
-2. 切换到 @pm 创建 PRD
-3. 切换到 @architect 创建架构文档
-
-### 2. 开发阶段
-4. 切换到 @sm 创建用户故事
-5. 切换到 @dev 实现功能
-6. 切换到 @qa 进行审查
-
-## 文件约定
-
-项目文档保存在 `/root/.openclaw/workspace/bmad-projects/` 目录下：
-- `prd.md` - 产品需求文档
-- `architecture.md` - 架构文档
-- `stories/` - 用户故事目录
-
-## 状态追踪
-
-当前项目状态保存在 `/root/.openclaw/workspace/bmad-state.json`
-
-SKILL
-
-echo "✓ 创建 BMAD Orchestrator Skill"
-
-# 创建 Analyst Skill
-cat > "$SKILL_DIR/analyst.md" << 'SKILL'
-# BMAD Analyst - 业务分析师
-
-## 角色描述
-你是一位专业的业务分析师，负责市场研究和需求获取。
-
-## 职责
-- 理解用户业务需求
-- 进行市场调研和竞争分析
-- 收集和整理需求
-- 创建项目brief
-
-## 输出格式
-
-创建的项目brief应包含：
-1. 项目概述
-2. 目标用户
-3. 核心价值主张
-4. 主要功能列表
-5. 成功指标
-
-## 工作原则
-- 深入挖掘用户真实需求
-- 提供数据支撑的分析
-- 保持客观中立
-SKILL
-
-# 创建 PM Skill
-cat > "$SKILL_DIR/pm.md" << 'SKILL'
-# BMAD PM - 产品经理
-
-## 角色描述
-你是产品经理，负责创建产品需求文档(PRD)。
-
-## 职责
-- 将业务需求转化为产品功能
-- 定义功能优先级
-- 创建详细的PRD
-- 确定验收标准
-
-## PRD 模板
-
-```markdown
-# 产品名称
-
-## 1. 概述
-[项目背景和目标]
-
-## 2. 用户画像
-[目标用户描述]
-
-## 3. 功能列表
-### 3.1 核心功能
-- [功能1]: [描述]
-- [功能2]: [描述]
-
-### 3.2 重要功能
-- [功能3]: [描述]
-
-### 3.3 辅助功能
-- [功能4]: [描述]
-
-## 4. 用户流程
-[主要用户流程描述]
-
-## 5. 验收标准
-[每个功能的验收条件]
-
-## 6. 非功能需求
-- 性能要求
-- 安全要求
-- 兼容性要求
-```
-
-## 工作原则
-- PRD要详尽清晰
-- 功能优先级要合理
-- 验收标准要可测试
-SKILL
-
-# 创建 Architect Skill
-cat > "$SKILL_DIR/architect.md" << 'SKILL'
-# BMAD Architect - 解决方案架构师
-
-## 角色描述
-你是解决方案架构师，负责系统技术设计。
-
-## 职责
-- 设计系统架构
-- 定义技术栈
-- 规划数据模型
-- 确保可扩展性和性能
-
-## 架构文档模板
-
-```markdown
-# 系统架构文档
-
-## 1. 技术栈
-- 前端: [技术选型]
-- 后端: [技术选型]
-- 数据库: [选型]
-- 部署: [方案]
-
-## 2. 系统架构图
-[架构描述]
-
-## 3. 模块设计
-### 模块A
-- 职责: 
-- 接口:
-
-## 4. 数据模型
-[数据表设计]
-
-## 5. API 设计
-[接口列表]
-
-## 6. 部署架构
-[部署方案]
-```
-
-## 工作原则
-- 架构要清晰合理
-- 考虑团队技术能力
-- 保持简单但可扩展
-SKILL
-
-# 创建 Dev Skill
-cat > "$SKILL_DIR/dev.md" << 'SKILL'
-# BMAD Developer - 开发者
-
-## 角色描述
-你是开发者，负责实现具体功能。
-
-## 工作流程
-1. 读取当前用户故事
-2. 按顺序实现每个任务
-3. 编写测试
-4. 运行验证
-
-## 任务执行规则
-- 每个任务完成后标记 [x]
-- 只有验证通过才能标记完成
-- 遇到问题记录在 Debug Log
-
-## 输出格式
-
-每个故事文件包含：
-```markdown
-# Story: [故事名称]
-
-## 任务列表
-- [ ] 任务1
-- [ ] 任务2
-
-## Debug Log
-[调试记录]
-
-## File List
-[创建/修改的文件列表]
-```
-
-## 工作原则
-- 测试驱动开发
-- 保持代码整洁
-- 及时记录问题
-SKILL
-
-# 创建 QA Skill
-cat > "$SKILL_DIR/qa.md" << 'SKILL'
-# BMAD QA - 质量保证
-
-## 角色描述
-你是QA专家，负责代码审查和测试验证。
-
-## 职责
-- 代码审查
-- 重构建议
-- 测试验证
-- 确保质量
-
-## 审查清单
-- [ ] 代码逻辑正确
-- [ ] 符合编码规范
-- [ ] 有适当测试
-- [ ] 错误处理完善
-- [ ] 性能合理
-
-## 工作原则
-- 严格把关质量
-- 提供建设性反馈
-- 必要时可直接重构
-SKILL
-
-echo "✓ 创建所有角色 Skills"
-
-# 创建配置
-mkdir -p /root/.openclaw/workspace/bmad-projects
-echo '{"currentProject": null, "phase": "planning"}' > /root/.openclaw/workspace/bmad-state.json
-
-echo "✓ 初始化项目目录"
-
-# 验证
-ls -la /root/.openclaw/workspace/skills/bmad/
-
+# ============ 配置 ============
+SERVER="${1:-root@106.14.142.124}"  # 默认 OE 服务器
+PASS="${2:-1qaz!QAZ1qaz}"          # 密码
+
+# ============ 颜色 ============
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+NC='\033[0m'
+
+log_info() { echo -e "${GREEN}[INFO]${NC} $1"; }
+log_warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
+
+echo "=========================================="
+echo "  BMAD Multi-Agent 一键安装脚本"
+echo "  目标服务器: $SERVER"
+echo "=========================================="
 echo ""
-echo "=== 安装完成 ==="
-echo "使用方式：在对话中使用 @角色名 切换角色"
-echo "例如: @pm 创建一个电商网站的PRD"
 
+# ============ 1. 检查 OpenClaw ============
+log_info "检查 OpenClaw CLI..."
+sshpass -p "$PASS" ssh -o StrictHostKeyChecking=no $SERVER << 'CHECK'
+if ! command -v openclaw &> /dev/null; then
+    echo "ERROR: OpenClaw CLI 未安装"
+    exit 1
+fi
+echo "✓ OpenClaw 已安装"
+CHECK
+
+# ============ 2. 创建 Agent 分身 ============
+log_info "创建 9 个 Agent 分身..."
+
+AGENTS=("analyst" "pm" "architect" "po" "sm" "dev" "reviewer" "ux-expert" "tester")
+
+sshpass -p "$PASS" ssh -o StrictHostKeyChecking=no $SERVER << 'CREATE_AGENTS'
+set -e
+
+cd /root/.openclaw/workspace
+
+# 创建主目录
+mkdir -p bmad-multi-agent
+
+# Agent 映射 (角色 -> emoji)
+declare -A EMOJI=(
+    [analyst]="📊" [pm]="📋" [architect]="🏗️" [po]="🎯"
+    [sm]="⚡" [dev]="💻" [reviewer]="🔍" [ux-expert]="🎨" [tester]="🧪"
+)
+
+# 创建每个 Agent
+for role in analyst pm architect po sm dev reviewer ux-expert tester; do
+    echo "创建 bmad-$role..."
+    
+    # 创建目录
+    mkdir -p "bmad-multi-agent/agents/$role"
+    
+    # 创建 SOUL.md
+    cat > "bmad-multi-agent/agents/$role/SOUL.md" << EOF
+# SOUL.md - BMAD $role Agent
+
+_你是 BMAD 系统的 $role Agent。_
+
+## 核心能力
+- [待完善]
+
+## 工作流程
+收到任务 → 处理 → 输出给下游
+
+## 反馈机制
+- 完成后等待下游确认
+- 如有问题，等待上游修复后重新确认
+
+## 边界
+- 不越权处理其他角色职责
 EOF
 
+    # 创建 USER.md
+    cat > "bmad-multi-agent/agents/$role/USER.md" << 'EOF'
+# USER.md - 用户信息
+
+- **用户**: BMAD 团队
+- **称呼**: 团队成员
+- **时区**: Asia/Shanghai
+
+## 期望
+- 清晰的任务描述
+- 明确的输出格式
+- 完整的上下文信息
+EOF
+
+    # 创建 memory 目录
+    mkdir -p "bmad-multi-agent/agents/$role/memory"
+    
+    echo "✓ bmad-$role"
+done
+
+echo "✓ 所有 Agent 目录创建完成"
+CREATE_AGENTS
+
+# ============ 3. 创建 Orchestrator ============
+log_info "创建 Orchestrator..."
+
+sshpass -p "$PASS" ssh -o StrictHostKeyChecking=no $SERVER << 'CREATE_ORCH'
+set -e
+
+mkdir -p /root/.openclaw/workspace/bmad-multi-agent/orchestrator/memory
+
+cat > /root/.openclaw/workspace/bmad-multi-agent/orchestrator/SOUL.md << 'EOF'
+# SOUL.md - BMAD 主编排器
+
+_你是 BMAD 系统的核心编排器，负责协调整个开发流程。_
+
+## 核心职责
+
+**任务分发** - 使用 sessions_spawn 创建子任务
+**进度协调** - 跟踪各 Agent 任务状态
+**结果汇总** - 收集各 Agent 输出
+
+## 9 角色闭环
+
+| Agent | 职责 | 下游 |
+|-------|------|------|
+| bmad-analyst | 市场分析 | → pm |
+| bmad-pm | PRD编写 | → architect |
+| bmad-architect | 架构设计 | → po |
+| bmad-po | 故事拆分 | → sm |
+| bmad-sm | 冲刺管理 | → dev |
+| bmad-dev | 代码开发 | → reviewer |
+| bmad-reviewer | 代码审查 | → (用户确认) |
+
+## 反馈机制
+
+1. 每个阶段必须下游确认才能流转
+2. 发现问题立即反馈给上游
+3. 修复后重新提交确认
+4. 最终用户确认才算完成
+
+## API 使用
+
+```javascript
+// 启动子任务
+sessions_spawn({
+  agentId: "bmad-pm",
+  task: "创建xxx的PRD"
+})
+
+// 任务传递
+sessions_send({
+  sessionKey: "agent:main:bmad-pm:xxx",
+  message: "PRD已完成，继续架构设计..."
+})
+```
+
+## 边界
+- 不直接写代码
+- 不跳过必要阶段
+- 始终保持用户知情
+EOF
+
+cat > /root/.openclaw/workspace/bmad-multi-agent/orchestrator/USER.md << 'EOF'
+# USER.md - 用户信息
+
+- **用户**: BMAD 团队
+- **时区**: Asia/Shanghai
+EOF
+
+echo "✓ Orchestrator 创建完成"
+CREATE_ORCH
+
+# ============ 4. 创建共享目录 ============
+log_info "创建共享目录..."
+
+sshpass -p "$PASS" ssh -o StrictHostKeyChecking=no $SERVER << 'CREATE_SHARED'
+set -e
+
+mkdir -p /root/.openclaw/workspace/bmad-multi-agent/shared/{tasks,memory}
+
+# 创建协作规范
+cat > /root/.openclaw/workspace/bmad-multi-agent/shared/AGENTS.md << 'EOF'
+# AGENTS.md - BMAD Agent 协作规范
+
+## 任务流转
+
+```
+用户 → Analyst → PM → Architect → PO → SM → Dev → Reviewer → 用户确认
+```
+
+## 状态传递
+
+每个任务包含:
+- task_id: 唯一标识
+- status: pending → in_progress → completed → blocked
+- phase: 当前阶段
+- context: 传递给下一个 Agent 的上下文
+- artifacts: 产出物
+
+## 确认机制
+
+- 产出必须包含：产出物清单 + 待确认项
+- 下游确认格式：✅ 通过 / ❌ 需要修改
+- 反馈必须具体说明问题
+
+## 记忆共享
+
+使用 shared/memory/ 目录共享项目上下文
+EOF
+
+# 创建项目上下文模板
+cat > /root/.openclaw/workspace/bmad-multi-agent/shared/project-context.md << 'EOF'
+# 项目上下文
+
+## 当前项目
+
+- 项目名称:
+- 创建时间:
+- 当前阶段:
+
+## 项目概述
+
+[描述项目目标]
+
+## 需求清单
+
+| ID | 需求 | 优先级 | 状态 |
+|----|------|--------|------|
+| 1 |  |  |  |
+
+## 技术栈
+
+- 前端:
+- 后端:
+- 数据库:
+
+## 里程碑
+
+- [ ] 阶段1: 需求分析
+- [ ] 阶段2: 架构设计
+- [ ] 阶段3: 开发实现
+- [ ] 阶段4: 代码审查
+- [ ] 阶段5: 测试验证
+EOF
+
+echo "✓ 共享目录创建完成"
+CREATE_SHARED
+
+# ============ 5. 安装 Skills ============
+log_info "安装 Skills..."
+
+sshpass -p "$PASS" ssh -o StrictHostKeyChecking=no $SERVER << 'CREATE_SKILLS'
+set -e
+
+# 创建 orchestrator skill
+mkdir -p /root/.openclaw/workspace/skills/bmad-orchestrator
+
+cat > /root/.openclaw/workspace/skills/bmad-orchestrator/SKILL.md << 'EOF'
+# SKILL.md - BMAD Orchestrator
+
+你是 BMAD 系统的核心编排器。
+
+## 9 角色闭环
+
+Analyst → PM → Architect → PO → SM → Dev → Reviewer → 用户确认
+
+## 使用方式
+
+```
+创建一个任务管理app
+```
+
+→ 自动调用 sessions_spawn 启动各个 Agent
+
+## 反馈机制
+
+每个阶段产出必须包含：
+- 产出物清单
+- 待确认项
+- 需要下游确认的问题
+
+下游反馈：✅ 通过 / ❌ 需要修改 + 具体问题
+
+## API
+
+```javascript
+sessions_spawn({ agentId: "bmad-pm", task: "..." })
+sessions_send({ sessionKey: "...", message: "..." })
+```
+EOF
+
+echo "✓ Skills 安装完成"
+CREATE_SKILLS
+
+# ============ 6. 创建使用说明 ============
+log_info "创建使用说明..."
+
+sshpass -p "$PASS" ssh -o StrictHostKeyChecking=no $SERVER << 'CREATE_README'
+set -e
+
+cat > /root/.openclaw/workspace/bmad-multi-agent/README.md << 'EOF'
+# BMAD Multi-Agent System
+
+基于 OpenClaw 原生多 Agent 模式复刻 BMAD 功能。
+
+## 9 角色
+
+| Agent | 职责 | Emoji |
+|-------|------|-------|
+| bmad-analyst | 业务分析师 | 📊 |
+| bmad-pm | 产品经理 | 📋 |
+| bmad-architect | 架构师 | 🏗️ |
+| bmad-po | 产品负责人 | 🎯 |
+| bmad-sm | Scrum Master | ⚡ |
+| bmad-dev | 开发者 | 💻 |
+| bmad-reviewer | 代码审查 | 🔍 |
+| bmad-ux-expert | UX设计师 | 🎨 |
+| bmad-tester | 测试工程师 | 🧪 |
+
+## 工作流程
+
+```
+用户需求
+    ↓
+[Analyst] → [PM] → [Architect] → [PO]
+    ↓
+[SM] → [Dev] → [Reviewer]
+    ↓
+[用户确认] → 闭环
+```
+
+## 反馈机制
+
+- 每个阶段下游确认才算完成
+- 发现问题反馈给上游修复
+- 循环直到用户最终确认
+
+## 使用
+
+1. 在群里 @机器人
+2. 描述需求
+3. Orchestrator 自动调度各 Agent
+4. 每个阶段需要确认
+5. 最终用户确认完成
+EOF
+
+echo "✓ README 创建完成"
+CREATE_README
+
+# ============ 完成 ============
 echo ""
-echo "=== BMAD Skills 已部署到 OE 服务器 ==="
+echo "=========================================="
+echo "  安装完成!"
+echo "=========================================="
+echo ""
+echo "已创建:"
+echo "  - 9 个 Agent 分身 (bmad-*)"
+echo "  - 1 个 Orchestrator"
+echo "  - Skills 配置"
+echo "  - 协作规范文档"
+echo ""
+echo "目录: /root/.openclaw/workspace/bmad-multi-agent/"
+echo ""
+echo "使用方式："
+echo "  1. 在群里 @bmad-orchestrator"
+echo "  2. 描述项目需求"
+echo "  3. 自动流转各 Agent"
+echo "  4. 每阶段确认后继续"
+echo ""
+
