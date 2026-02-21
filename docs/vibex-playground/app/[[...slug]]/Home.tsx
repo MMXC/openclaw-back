@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import styles from './Home.module.css';
@@ -30,6 +30,15 @@ const pages: Page[] = [
 export default function Home() {
   const pathname = usePathname();
   const [expandedPages, setExpandedPages] = useState<string[]>([]);
+  const [isMobile, setIsMobile] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const toggleExpand = (id: string) => {
     setExpandedPages(prev => 
@@ -39,49 +48,116 @@ export default function Home() {
 
   return (
     <div className={styles.container}>
-      {/* 左侧页面菜单 */}
-      <aside className={styles.sidebar}>
-        <h2 className={styles.sidebarTitle}>📁 页面菜单</h2>
-        <nav className={styles.nav}>
-          {pages.map(page => (
-            <div key={page.id} className={styles.pageItem}>
-              <div 
-                className={styles.pageHeader}
-                onClick={() => toggleExpand(page.id)}
-              >
-                <span className={styles.expandIcon}>
-                  {expandedPages.includes(page.id) ? '▼' : '▶'}
-                </span>
-                <span className={styles.pageId}>{page.id}</span>
-                <span className={styles.pageName}>{page.name}</span>
-              </div>
-              
-              {expandedPages.includes(page.id) && (
-                <div className={styles.pageActions}>
-                  <Link 
-                    href={`/${page.slug}`}
-                    className={`${styles.actionLink} ${pathname === `/${page.slug}` ? styles.active : ''}`}
-                  >
-                    📄 说明
-                  </Link>
-                  <Link 
-                    href={`/playground?page=${page.slug}`}
-                    className={`${styles.actionLink} ${pathname === '/playground' ? styles.active : ''}`}
-                  >
-                    🎨 调整画布
-                  </Link>
+      {/* 移动端顶部栏 */}
+      {isMobile && (
+        <header className={styles.mobileHeader}>
+          <button 
+            className={styles.menuBtn}
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            {menuOpen ? '✕' : '☰'}
+          </button>
+          <span className={styles.mobileTitle}>🚀 VibeX</span>
+          <div style={{ width: 40 }} />
+        </header>
+      )}
+
+      {/* 移动端遮罩 */}
+      {isMobile && menuOpen && (
+        <div 
+          className={styles.overlay}
+          onClick={() => setMenuOpen(false)}
+        />
+      )}
+
+      {/* 左侧菜单 - 桌面端 */}
+      {!isMobile && (
+        <aside className={styles.sidebar}>
+          <h2 className={styles.sidebarTitle}>📁 页面菜单</h2>
+          <nav className={styles.nav}>
+            {pages.map(page => (
+              <div key={page.id} className={styles.pageItem}>
+                <div 
+                  className={styles.pageHeader}
+                  onClick={() => toggleExpand(page.id)}
+                >
+                  <span className={styles.expandIcon}>
+                    {expandedPages.includes(page.id) ? '▼' : '▶'}
+                  </span>
+                  <span className={styles.pageId}>{page.id}</span>
+                  <span className={styles.pageName}>{page.name}</span>
                 </div>
-              )}
-            </div>
-          ))}
-        </nav>
-      </aside>
+                
+                {expandedPages.includes(page.id) && (
+                  <div className={styles.pageActions}>
+                    <Link 
+                      href={`/${page.slug}`}
+                      className={`${styles.actionLink} ${pathname === `/${page.slug}` ? styles.active : ''}`}
+                    >
+                      📄 说明
+                    </Link>
+                    <Link 
+                      href={`/playground?page=${page.slug}`}
+                      className={`${styles.actionLink} ${pathname === '/playground' ? styles.active : ''}`}
+                    >
+                      🎨 调整画布
+                    </Link>
+                  </div>
+                )}
+              </div>
+            ))}
+          </nav>
+        </aside>
+      )}
+
+      {/* 移动端抽屉菜单 */}
+      {isMobile && (
+        <aside className={`${styles.mobileSidebar} ${menuOpen ? styles.open : ''}`}>
+          <h2 className={styles.sidebarTitle}>📁 页面菜单</h2>
+          <nav className={styles.nav}>
+            {pages.map(page => (
+              <div key={page.id} className={styles.pageItem}>
+                <div 
+                  className={styles.pageHeader}
+                  onClick={() => toggleExpand(page.id)}
+                >
+                  <span className={styles.expandIcon}>
+                    {expandedPages.includes(page.id) ? '▼' : '▶'}
+                  </span>
+                  <span className={styles.pageId}>{page.id}</span>
+                  <span className={styles.pageName}>{page.name}</span>
+                </div>
+                
+                {expandedPages.includes(page.id) && (
+                  <div className={styles.pageActions}>
+                    <Link 
+                      href={`/${page.slug}`}
+                      className={`${styles.actionLink} ${pathname === `/${page.slug}` ? styles.active : ''}`}
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      📄 说明
+                    </Link>
+                    <Link 
+                      href={`/playground?page=${page.slug}`}
+                      className={`${styles.actionLink} ${pathname === '/playground' ? styles.active : ''}`}
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      🎨 调整画布
+                    </Link>
+                  </div>
+                )}
+              </div>
+            ))}
+          </nav>
+        </aside>
+      )}
 
       {/* 右侧内容区 */}
       <main className={styles.main}>
         <div className={styles.welcome}>
-          <h1>🎯 VibeX Playground</h1>
-          <p>选择左侧页面，点击"调整画布"开始编辑</p>
+          <div className={styles.heroGlow} />
+          <h1 className={styles.title}>🚀 VibeX Playground</h1>
+          <p className={styles.subtitle}>选择左侧页面，点击"🎨 调整画布"开始编辑</p>
           
           <div className={styles.features}>
             <div className={styles.feature}>
