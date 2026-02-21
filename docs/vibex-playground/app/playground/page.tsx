@@ -417,6 +417,10 @@ function PlaygroundContent() {
   const [showGrid, setShowGrid] = useState(false);
   const [showMore, setShowMore] = useState(false);
   const [sciFiPreview, setSciFiPreview] = useState(true);
+  // 移动端状态
+  const [isMobile, setIsMobile] = useState(false);
+  const [leftDrawerOpen, setLeftDrawerOpen] = useState(false);
+  const [aiDrawerOpen, setAiDrawerOpen] = useState(false);
   
   const config = pageConfigsData[currentPageId] || pageConfigsData.landing;
   const [page, setPage] = useState<PageState>({ id: '', name: config.name, controls: [] });
@@ -436,6 +440,16 @@ function PlaygroundContent() {
     setPage({ id: currentPageId, name: config.name, controls });
     setSelectedControl(null);
   }, [currentPageId, config]);
+
+  // 移动端检测
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over, delta } = event;
@@ -524,9 +538,51 @@ function PlaygroundContent() {
       <div className={styles.playground}>
         <Toolbar pageName={page.name} onNameChange={() => {}} onExport={exportConfig} viewMode="ui" onViewModeChange={() => {}} />
 
+        {/* 移动端顶部操作栏 */}
+        {isMobile && (
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            padding: '8px 12px',
+            background: 'linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%)',
+            borderBottom: '1px solid rgba(0,255,255,0.2)',
+          }}>
+            <button 
+              onClick={() => setLeftDrawerOpen(true)}
+              style={{
+                padding: '8px 12px',
+                background: 'rgba(0,255,255,0.1)',
+                border: '1px solid rgba(0,255,255,0.3)',
+                borderRadius: 8,
+                color: '#00ffff',
+                fontSize: 16,
+                cursor: 'pointer',
+              }}
+            >
+              ☰
+            </button>
+            <button 
+              onClick={() => setAiDrawerOpen(!aiDrawerOpen)}
+              style={{
+                padding: '8px 12px',
+                background: aiDrawerOpen ? 'linear-gradient(135deg, #00ffff, #00ff88)' : 'rgba(0,255,255,0.1)',
+                border: '1px solid',
+                borderColor: aiDrawerOpen ? '#00ffff' : 'rgba(0,255,255,0.3)',
+                borderRadius: 8,
+                color: aiDrawerOpen ? '#0a0a0f' : '#00ffff',
+                fontSize: 14,
+                cursor: 'pointer',
+              }}
+            >
+              {aiDrawerOpen ? '✕ 关闭' : '🤖 AI助手'}
+            </button>
+          </div>
+        )}
+
         <div className={styles.main}>
-          {/* 左侧菜单 */}
-          <div className={`${styles.sidebar} ${sidebarCollapsed ? styles.collapsed : ''}`}>
+          {/* 左侧菜单 - 桌面端 */}
+          {!isMobile && (
+            <div className={`${styles.sidebar} ${sidebarCollapsed ? styles.collapsed : ''}`}>
             <div className={styles.sidebarHeader}>
               <span className={styles.sidebarTitle}>📁 页面菜单</span>
               <button className={styles.collapseBtn} onClick={() => setSidebarCollapsed(!sidebarCollapsed)}>
@@ -557,6 +613,84 @@ function PlaygroundContent() {
               </nav>
             )}
           </div>
+          )}
+
+          {/* 移动端左侧抽屉 */}
+          {isMobile && leftDrawerOpen && (
+            <div style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              bottom: 0,
+              width: '280px',
+              background: '#0a0a0f',
+              borderRight: '1px solid rgba(0,255,255,0.3)',
+              zIndex: 1000,
+              overflow: 'auto',
+              animation: 'slideIn 0.3s ease',
+            }}>
+              <div style={{
+                padding: '16px',
+                borderBottom: '1px solid rgba(0,255,255,0.2)',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}>
+                <span style={{ color: '#00ffff', fontWeight: 'bold' }}>📁 页面菜单</span>
+                <button 
+                  onClick={() => setLeftDrawerOpen(false)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#00ffff',
+                    fontSize: 20,
+                    cursor: 'pointer',
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+              <nav style={{ padding: '12px' }}>
+                {menuItems.map(item => (
+                  <div 
+                    key={item.id}
+                    onClick={() => { setCurrentPageId(item.id); setActiveTab('page'); setLeftDrawerOpen(false); }}
+                    style={{
+                      padding: '12px 16px',
+                      marginBottom: 8,
+                      background: currentPageId === item.id && activeTab === 'page' 
+                        ? 'linear-gradient(135deg, rgba(0,255,255,0.2), rgba(0,255,136,0.1))' 
+                        : 'rgba(255,255,255,0.05)',
+                      border: '1px solid',
+                      borderColor: currentPageId === item.id && activeTab === 'page' ? '#00ffff' : 'rgba(0,255,255,0.1)',
+                      borderRadius: 8,
+                      color: '#fff',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <span style={{ marginRight: 8, color: '#00ffff' }}>{item.id.padStart(2, '0')}</span>
+                    {item.name}
+                  </div>
+                ))}
+              </nav>
+            </div>
+          )}
+
+          {/* 遮罩层 */}
+          {isMobile && leftDrawerOpen && (
+            <div 
+              onClick={() => setLeftDrawerOpen(false)}
+              style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: 'rgba(0,0,0,0.5)',
+                zIndex: 999,
+              }}
+            />
+          )}
 
           {/* Tab 栏 */}
           {activeTab === 'page' && (
@@ -618,7 +752,10 @@ function PlaygroundContent() {
 
           {/* 右侧属性面板 + AI助手 */}
           {activeTab === 'page' && (
-            <div className={styles.rightPanel}>
+            <>
+              {/* 桌面端右侧面板 */}
+              {!isMobile && (
+                <div className={styles.rightPanel}>
               <div className={styles.propsSection}>
                 {selectedControl ? (
                   <div className={styles.propsPanel}>
@@ -675,6 +812,55 @@ function PlaygroundContent() {
               <div className={styles.aiSection}>
                 <AIChatPanel 
                   selectedControl={selectedControl ? { id: selectedControl.id, type: selectedControl.type, code: '' } : null}
+                  pageCode={JSON.stringify({ page }, null, 2)}
+                  onApplyChange={() => {}}
+                />
+              </div>
+            </div>
+              )}
+            </>
+          )}
+
+          {/* 移动端AI助手底部抽屉 */}
+          {isMobile && activeTab === 'page' && aiDrawerOpen && (
+            <div style={{
+              position: 'fixed',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: '60vh',
+              background: '#0a0a0f',
+              borderTop: '2px solid rgba(0,255,255,0.3)',
+              borderRadius: '20px 20px 0 0',
+              zIndex: 1000,
+              display: 'flex',
+              flexDirection: 'column',
+              animation: 'slideUp 0.3s ease',
+            }}>
+              <div style={{
+                padding: '12px 16px',
+                borderBottom: '1px solid rgba(0,255,255,0.2)',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}>
+                <span style={{ color: '#00ffff', fontWeight: 'bold' }}>🤖 AI 助手</span>
+                <button 
+                  onClick={() => setAiDrawerOpen(false)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#00ffff',
+                    fontSize: 20,
+                    cursor: 'pointer',
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+              <div style={{ flex: 1, overflow: 'auto', padding: '12px' }}>
+                <AIChatPanel
+                  selectedControl={selectedControl as any}
                   pageCode={JSON.stringify({ page }, null, 2)}
                   onApplyChange={() => {}}
                 />

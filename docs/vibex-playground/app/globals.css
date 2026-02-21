@@ -4,6 +4,16 @@
   box-sizing: border-box;
 }
 
+@keyframes slideIn {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
 :root {
   --primary: #1890ff;
   --primary-dark: #096dd9;
