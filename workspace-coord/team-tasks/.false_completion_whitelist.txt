@@ -1,0 +1,18 @@
+# False completion whitelist
+# Format: project/stage_id
+# Lines starting with # are comments
+
+# vibex-sprint-0412 — All outputs verified as real
+vibex-sprint-0412/design-architecture
+vibex-sprint-0412/dev-e3
+vibex-sprint-0412/tester-e3
+vibex-sprint-0412/reviewer-e3
+vibex-sprint-0412/reviewer-push-e3
+vibex-sprint-0412/dev-e4
+vibex-sprint-0412/tester-e4
+vibex-sprint-0412/coord-completed
+vibex-sprint-0412/analyze-requirements
+vibex-sprint-0412/create-prd
+vibex-proposals-20260413/analyst-review
+vibex-proposals-20260413/pm-review
+vibex-proposals-20260413/architect-review

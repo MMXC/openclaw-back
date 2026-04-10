@@ -9,21 +9,18 @@ from typing import List, Dict, Optional
 
 TEAM_TASKS_DIR = "/root/.openclaw/workspace-coord/team-tasks"
 
-# Whitelist: project/stage_id pairs to exclude from blocked report
-# These are confirmed false positives (e.g. blocked but depends_on=null, or in-progress)
+# Whitelist: project/stage_id pairs to exclude from blocked report.
+# These are confirmed false positives or data anomalies.
+# NOTE: Items with "blocked but blocker=done" were fixed in data directly
+#       (→ changed to "ready") instead of being whitelisted. Only keep
+#       genuine anomalies here.
 _BLOCKED_WHITELIST = [
-    # vibex-analyst-proposals — in-progress, dev actively working
+    # vibex-analyst-proposals — in-progress, dev actively working (not actually blocked)
     "vibex-analyst-proposals/dev-epic1-基础设施修复",
     # vibex-p0-sprint — in-progress, dev actively working
     "vibex-p0-sprint/dev-epic1-reviewer-dedup",
-    # vibex-p0-sprint — blocked but depends_on=null (data inconsistency)
-    "vibex-p0-sprint/reviewer-epic1-reviewer-dedup",
-    # vibex-tester-proposals — blocked but depends_on=null (data inconsistency)
-    "vibex-tester-proposals/review-e1-test-infra",
-    # vibex-architect-proposals — blocked but depends_on=null (data inconsistency)
-    "vibex-architect-proposals/reviewer-epic2-design-token-motion层",
-    # vibex-proposals-summary — blocked but depends_on=null (data inconsistency)
-    "vibex-proposals-summary/reviewer-e2-p001p002设计投入释放",
+    # vibex-proposals-summary — chained: reviewer-push blocked by reviewer (itself blocked)
+    #   This chain resolves automatically once the preceding reviewer stage completes
     "vibex-proposals-summary/reviewer-push-e2-p001p002设计投入释放",
 ]
 
